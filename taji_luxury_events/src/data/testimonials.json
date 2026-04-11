@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Amina K.",
+    "role": "Bride",
+    "quote": "Taji made our day effortless and breathtaking.",
+    "avatar": "/static/img/avatars/amina.webp"
+  },
+  {
+    "name": "David N.",
+    "role": "Marketing Lead",
+    "quote": "Our product launch looked and felt world class.",
+    "avatar": "/static/img/avatars/david.webp"
+  },
+  {
+    "name": "Lola E.",
+    "role": "Event Stylist Alum",
+    "quote": "The academy sharpened my craft and my business confidence.",
+    "avatar": "/static/img/avatars/lola.webp"
+  }
+]

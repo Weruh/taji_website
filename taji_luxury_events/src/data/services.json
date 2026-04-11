@@ -1,0 +1,44 @@
+[
+  {
+    "slug": "academy",
+    "title": "Events Academy",
+    "summary": "Professional training in event planning, design, and management. Available both online and physical classes.",
+    "highlights": [
+      "Event Management",
+      "Wedding Planning and Decor",
+      "Balloon Design",
+      "Floral Design",
+      "Corporate Events Management",
+      "Interior Design"
+    ],
+    "image": "/static/img/hero/designclass.webp",
+    "cta": "Join the Academy",
+    "link": "/academy"
+  },
+  {
+    "slug": "weddings",
+    "title": "Luxury Weddings and Decor",
+    "summary": "We create timeless, elegant weddings and intimate celebrations designed to reflect your unique story.",
+    "highlights": [
+      "Full planning",
+      "Design and styling",
+      "Day of coordination"
+    ],
+    "image": "/static/img/hero/wedding.webp",
+    "cta": "Start Planning",
+    "link": "/weddings"
+  },
+  {
+    "slug": "corporate",
+    "title": "Corporate Events and Launches",
+    "summary": "We offer end-to-end solutions for brands and organizations - delivering high-impact corporate events, product launches, and gala experiences with excellence and precision.",
+    "highlights": [
+      "Product launches",
+      "Gala dinners",
+      "Conferences"
+    ],
+    "image": "/static/img/hero/corparate.webp",
+    "cta": "Book a Consultation",
+    "link": "/corporate"
+  }
+]

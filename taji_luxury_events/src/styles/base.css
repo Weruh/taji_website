@@ -1,0 +1,606 @@
+/* base.css - Custom utilities, gradients, and focus states for the Taji experience. */
+:root {
+  --bg-charcoal: #151111;
+  --text-ivory: lab(44.11% 68.46 55.32);
+  --primary: #7a1b1b;
+  --gold: #c5a572;
+  --gold-bright: #d4af37;
+  --emerald: #2e7d6d;
+}
+
+body {
+  background-color: var(--bg-charcoal);
+  color: var(--text-ivory);
+  scroll-behavior: smooth;
+}
+
+.theme-light body {
+  background-color: var(--bg-charcoal);
+  color: var(--text-ivory);
+}
+
+.theme-light .bg-white\/5 {
+  background-color: rgba(197, 165, 114, 0.1) !important;
+}
+
+.theme-light .text-ivory {
+  color: var(--text-ivory) !important;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.swiper-pagination-bullet-active {
+  background: var(--gold);
+}
+
+[data-aos] {
+  will-change: transform, opacity;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 10px rgba(197, 165, 114, 0.45));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 25px rgba(197, 165, 114, 0.65));
+  }
+}
+
+.animate-float {
+  animation: float 7s ease-in-out infinite;
+}
+
+.glow-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.glow-line.is-active {
+  opacity: 1;
+  animation: glowDash 8s linear infinite;
+}
+
+@keyframes glowDash {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.card-hover {
+  transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.card-hover:hover,
+.card-hover:focus-visible {
+  transform: translateY(-10px);
+  border-color: rgba(197, 165, 114, 0.4);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 30px rgba(197, 165, 114, 0.25);
+}
+
+/* Exquisite services experience */
+.exquisite-section {
+  position: relative;
+  background: linear-gradient(to bottom, #1b1515 0%, #120d0d 100%);
+  color: #c5a572;
+  overflow: hidden;
+}
+
+.exquisite-section .exquisite-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+  position: relative;
+  z-index: 1;
+}
+
+.exquisite-header {
+  text-align: center;
+  margin-bottom: 5rem;
+}
+
+.exquisite-header-ornament {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  margin: 0 auto 2rem;
+  position: relative;
+}
+
+.exquisite-header-ornament::before,
+.exquisite-header-ornament::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #d4af37;
+  border-radius: 50%;
+  top: -2.5px;
+}
+
+.exquisite-header-ornament::before {
+  left: -10px;
+}
+
+.exquisite-header-ornament::after {
+  right: -10px;
+}
+
+.exquisite-header .eyebrow {
+  font-size: 0.8rem;
+  letter-spacing: 0.6rem;
+  color: #d4af37;
+  font-family: "Montserrat", sans-serif;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeInUp 1s ease forwards;
+}
+
+.exquisite-header h1 {
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  margin: 1rem 0;
+  color: #c5a572;
+  opacity: 0;
+  animation: fadeInUp 1s ease 0.2s forwards;
+}
+
+.exquisite-header p {
+  font-size: 1rem;
+  color: rgba(140, 122, 87, 0.85);
+  font-style: italic;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  animation: fadeInUp 1s ease 0.4s forwards;
+}
+
+.exquisite-hierarchy {
+  margin-bottom: 5rem;
+}
+
+.exquisite-hierarchy-container {
+  position: relative;
+  padding: 4rem;
+  border-radius: 1.5rem;
+  background: linear-gradient(135deg, rgba(197, 165, 114, 0.15), rgba(245, 240, 230, 0.9));
+  box-shadow: 0 15px 35px rgba(197, 165, 114, 0.25);
+  overflow: hidden;
+}
+
+.exquisite-hierarchy-container::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.05), transparent 70%);
+  animation: rotate 30s linear infinite;
+}
+
+.exquisite-hierarchy-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.exquisite-hierarchy-title {
+  text-align: center;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: #f4d03f;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+}
+
+.exquisite-hierarchy-title::after {
+  content: "";
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  position: absolute;
+  bottom: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.exquisite-branch-details {
+  margin: 5rem 0;
+}
+
+.exquisite-branch-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.exquisite-branch-card {
+  background: rgba(245, 240, 230, 0.92);
+  border: 1px solid rgba(197, 165, 114, 0.4);
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.5s ease, box-shadow 0.5s ease, border-color 0.5s ease;
+}
+
+.exquisite-branch-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.2), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.exquisite-branch-card:hover {
+  transform: translateY(-12px);
+  border-color: rgba(197, 165, 114, 0.8);
+  box-shadow: 0 20px 60px rgba(197, 165, 114, 0.35);
+}
+
+.exquisite-branch-card:hover::before {
+  opacity: 1;
+}
+
+.exquisite-branch-card .branch-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.35rem;
+  color: #d4af37;
+  text-transform: uppercase;
+  font-family: "Montserrat", sans-serif;
+}
+
+.exquisite-branch-card .branch-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2.2rem;
+  margin: 1rem 0;
+  letter-spacing: 0.15em;
+}
+
+.exquisite-branch-card .branch-description {
+  font-size: 1rem;
+  color: #c3c3c3;
+  margin-bottom: 1.5rem;
+}
+
+.exquisite-branch-card .branch-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.exquisite-branch-card .tag {
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 999px;
+  padding: 0.35rem 0.95rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #d4af37;
+  font-family: "Montserrat", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.exquisite-branch-card .branch-link {
+  color: #d4af37;
+  font-family: "Montserrat", sans-serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.exquisite-services-grid {
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.exquisite-service-card {
+  background: rgba(20, 12, 12, 0.85);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(197, 165, 114, 0.35);
+  overflow: hidden;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.exquisite-service-card:hover {
+  transform: translateY(-14px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45), 0 0 30px rgba(197, 165, 114, 0.25);
+}
+
+.exquisite-service-card .service-image-container {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+}
+
+.exquisite-service-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.exquisite-service-card:hover img {
+  transform: scale(1.08);
+}
+
+.exquisite-service-card .service-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(21, 17, 17, 0.95), transparent 70%);
+}
+
+.exquisite-service-card .service-content {
+  padding: 2.5rem;
+  color: #f8efd6;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 1.5rem;
+}
+
+.exquisite-service-card .service-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  margin: 1rem 0;
+  color: #f8efd6;
+}
+
+.exquisite-service-card .service-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.exquisite-service-card .feature-tag {
+  border: 1px solid rgba(197, 165, 114, 0.5);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: #f8efd6;
+  font-family: "Montserrat", sans-serif;
+}
+
+.exquisite-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.exquisite-particles .particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.35);
+  animation: particleFloat 18s ease-in-out infinite;
+}
+
+/* Foundation section */
+.foundation-section {
+  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.05), transparent 60%), var(--bg-charcoal);
+}
+.foundation-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.foundation-diagram .foundation-outline,
+.foundation-diagram .foundation-branch {
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+  animation: foundationDraw 2.8s ease forwards;
+}
+.foundation-diagram .foundation-branch {
+  animation-duration: 2s;
+}
+.foundation-node {
+  cursor: pointer;
+  transition: transform 0.4s ease;
+}
+.foundation-node .node-ring {
+  fill: none;
+  stroke: rgba(213, 175, 55, 0.35);
+  stroke-width: 1.5;
+  animation: foundationPulse 6s ease-in-out infinite;
+}
+.foundation-node .node-core {
+  fill: url(#foundationGold);
+  filter: url(#foundationGlow);
+}
+.foundation-node .node-core-inner {
+  fill: #010101;
+}
+.foundation-node .node-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  fill: var(--gold);
+  opacity: 0;
+  animation: foundationText 1.2s ease forwards;
+}
+.foundation-node:hover {
+  transform: translateY(-6px);
+}
+.foundation-node:hover .node-ring {
+  stroke-width: 2.5;
+}
+.foundation-node:hover .node-label {
+  fill: var(--gold-bright);
+}
+@keyframes foundationDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes foundationPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+@keyframes foundationText {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes drawLine {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes nodeGlow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(244, 208, 63, 1));
+  }
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  20%,
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(40px, -120px, 0);
+    opacity: 0;
+  }
+}
+
+.whatsapp-float {
+  position: fixed;
+  right: 1rem;
+  bottom: 5rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #25d366, #128c7e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  box-shadow: 0 25px 40px rgba(18, 140, 126, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 60;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 30px 50px rgba(18, 140, 126, 0.75);
+}
+
+.whatsapp-float:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+.whatsapp-float__icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  filter: invert(100%);
+}
+
+@media (max-width: 768px) {
+  .exquisite-hierarchy-container {
+    padding: 2rem;
+  }
+  .exquisite-hierarchy-title {
+    letter-spacing: 0.2em;
+  }
+}

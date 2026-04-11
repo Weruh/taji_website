@@ -1,0 +1,198 @@
+@keyframes heroFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-float {
+  animation: heroFloat 12s ease-in-out infinite;
+}
+
+@keyframes sparklePulse {
+  0% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+}
+
+.sparkle-layer::before,
+.sparkle-layer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px);
+  background-size: 150px 150px;
+  animation: sparklePulse 10s ease-in-out infinite;
+}
+
+.sparkle-layer::after {
+  animation-duration: 14s;
+  opacity: 0.12;
+}
+
+.filmstrip::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.prymind-noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E");
+  mix-blend-mode: screen;
+  opacity: 0.25;
+}
+
+.prymind-particle-field .particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(197, 165, 114, 0.8) 0%, transparent 70%);
+  animation: pulse 12s ease-in-out infinite;
+}
+
+.prymind-frame .halo {
+  content: "";
+  position: absolute;
+  inset: -12px;
+  border-radius: inherit;
+  box-shadow: 0 0 40px rgba(197, 165, 114, 0.35);
+  opacity: 0.8;
+  pointer-events: none;
+  animation: pulse 6s ease-in-out infinite;
+}
+
+@media (max-width: 767px) {
+  .prymind-frame::before {
+    content: "";
+    position: absolute;
+    top: 180px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: calc(100% - 200px);
+    background: linear-gradient(180deg, rgba(197, 165, 114, 0.6), transparent);
+    pointer-events: none;
+  }
+}
+
+.triad-shell {
+  background-color: #0b0b0c;
+}
+
+.triad-noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect width='1' height='1' fill='rgba(255,255,255,0.08)'/%3E%3C/svg%3E");
+  mix-blend-mode: screen;
+}
+
+.triad-particles {
+  position: absolute;
+  inset: 0;
+}
+
+.triad-particle {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(197, 165, 114, 0.8), rgba(197, 165, 114, 0));
+  animation: triadDrift 18s linear infinite;
+}
+
+@keyframes triadDrift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translate3d(20px, -30px, 0) scale(1.2);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(-10px, 20px, 0) scale(1);
+    opacity: 0.4;
+  }
+}
+
+.hub-breathe {
+  animation: hubPulse 6s ease-in-out infinite;
+}
+
+@keyframes hubPulse {
+  0%,
+  100% {
+    box-shadow: 0 10px 40px rgba(178, 21, 27, 0.45), inset 0 0 0 rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    box-shadow: 0 20px 60px rgba(178, 21, 27, 0.55), inset 0 0 30px rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+}
+
+.triad-card-orbit {
+  position: absolute;
+  width: 18rem;
+}
+
+.triad-card-left {
+  bottom: 60px;
+  left: 4%;
+}
+
+.triad-card-right {
+  bottom: 60px;
+  right: 4%;
+}
+
+.triad-card-center {
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.pyramid-stack::before,
+.pyramid-stack::after {
+  content: "";
+  position: absolute;
+  width: 45%;
+  height: 1px;
+  top: calc(50% + 30px);
+  background: linear-gradient(90deg, transparent, rgba(197, 165, 114, 0.5), transparent);
+}
+
+.pyramid-stack::before {
+  left: 5%;
+  transform: rotate(-6deg);
+}
+
+.pyramid-stack::after {
+  right: 5%;
+  transform: rotate(6deg);
+}

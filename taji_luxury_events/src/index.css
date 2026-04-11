@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-charcoal: #151111;
+  --color-primary: #7a1b1b;
+  --color-gold: #c5a572;
+  --color-gold-bright: #d4af37;
+  --color-ivory: #faf7f2;
+  --color-mist: #e6d8b6;
+  --color-emerald: #2e7d6d;
+
+  --font-inter: Inter, sans-serif;
+  --font-playfair: "Playfair Display", serif;
+}
+
+@import "./styles/base.css";
+@import "./styles/overrides.css";
