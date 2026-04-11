@@ -28,16 +28,19 @@ jobs:
         with:
           node-version: lts/*
           cache: npm
+          cache-dependency-path: taji_luxury_events/package-lock.json
       - name: Install dependencies
         run: npm ci
+        working-directory: taji_luxury_events
       - name: Build
         run: npm run build
+        working-directory: taji_luxury_events
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: taji_luxury_events/dist
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
