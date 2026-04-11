@@ -48,7 +48,7 @@ export default function StatCounter({ value, label }) {
   return (
     <div ref={ref} className="text-center px-6 py-4">
       <p className="text-3xl md:text-4xl font-playfair text-gold">{display}</p>
-      <p className="text-xs uppercase tracking-[0.4em] text-mist/70 mt-2">{label}</p>
+      <p className="stat-label text-xs uppercase text-mist/70 mt-2">{label}</p>
     </div>
   )
 }

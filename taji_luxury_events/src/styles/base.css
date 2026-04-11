@@ -14,6 +14,13 @@ body {
   scroll-behavior: smooth;
 }
 
+.stat-label {
+  display: block;
+  letter-spacing: 0.16em;
+  word-spacing: 0.12em;
+  line-height: 1.45;
+}
+
 .theme-light body {
   background-color: var(--bg-charcoal);
   color: var(--text-ivory);
@@ -602,5 +609,19 @@ a:focus-visible {
   }
   .exquisite-hierarchy-title {
     letter-spacing: 0.2em;
+  }
+  .stat-label {
+    letter-spacing: 0.12em;
+    word-spacing: 0.1em;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    word-spacing: 0.08em;
+    line-height: 1.35;
   }
 }
