@@ -12,6 +12,9 @@ export default function Checkout() {
   const course = useMemo(() => courses.find((item) => item.slug === courseSlug), [courseSlug])
   const [selectedOption, setSelectedOption] = useState('full')
   const [errors, setErrors] = useState([])
+  const [statusMessage, setStatusMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const apiBase = import.meta.env.VITE_API_BASE || ''
 
   if (!course) {
     return (
@@ -26,22 +29,56 @@ export default function Checkout() {
 
   const halfAmount = Math.ceil((course.total_fee || 0) / 2)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setErrors([])
+    setStatusMessage('')
     const form = event.currentTarget
     const data = new FormData(form)
     const name = String(data.get('name') || '').trim()
     const email = String(data.get('email') || '').trim()
+    const phone = String(data.get('phone') || '').trim()
     if (!name || !email) {
-      setErrors(['Please provide both your name and email so we can send the payment link.'])
+      setErrors(['Please provide both your name and email so we can send payment updates.'])
       return
     }
-    if (course.paystack_url) {
-      window.open(course.paystack_url, '_blank', 'noopener')
+    if (!phone) {
+      setErrors(['Phone number is required for M-Pesa STK push.'])
       return
     }
-    setErrors(['Payment setup is not available yet for this course.'])
+
+    const amountKES = selectedOption === 'half' ? halfAmount : course.total_fee || 0
+    setIsSubmitting(true)
+    try {
+      const response = await fetch(`${apiBase}/api/paystack/mpesa`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          amount: amountKES,
+          currency: 'KES',
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          paymentPlan: selectedOption === 'half' ? '50% deposit' : 'Full payment',
+        }),
+      })
+
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok || result?.status === false) {
+        const message = result?.message || 'Unable to initiate STK push. Please try again.'
+        setErrors([message])
+        return
+      }
+
+      const displayText = result?.data?.display_text || result?.message || 'STK push sent. Please check your phone to complete the payment.'
+      setStatusMessage(displayText)
+    } catch (error) {
+      setErrors(['Unable to reach the payment server. Please try again.'])
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -91,6 +128,11 @@ export default function Checkout() {
                 {errors.map((error) => (
                   <p key={error}>{error}</p>
                 ))}
+              </div>
+            ) : null}
+            {statusMessage ? (
+              <div className="space-y-2 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+                <p>{statusMessage}</p>
               </div>
             ) : null}
 
@@ -144,9 +186,10 @@ export default function Checkout() {
 
               <button
                 type="submit"
-                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal"
+                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={isSubmitting}
               >
-                Proceed to Payment
+                {isSubmitting ? 'Sending STK Push...' : 'Send STK Push'}
               </button>
             </form>
           </div>
