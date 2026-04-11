@@ -46,6 +46,10 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true })
 })
 
+app.get('/', (_req, res) => {
+  res.status(200).send('Taji backend is running.')
+})
+
 app.post('/api/paystack/initialize', async (req, res) => {
   if (!requireSecretKey(res)) return
   const { email, name, phone, courseSlug, paymentOption } = req.body || {}
