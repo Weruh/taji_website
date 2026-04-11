@@ -12,6 +12,7 @@ export default function Checkout() {
   const course = useMemo(() => courses.find((item) => item.slug === courseSlug), [courseSlug])
   const [selectedOption, setSelectedOption] = useState('full')
   const [errors, setErrors] = useState([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   if (!course) {
     return (
@@ -26,22 +27,46 @@ export default function Checkout() {
 
   const halfAmount = Math.ceil((course.total_fee || 0) / 2)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setErrors([])
     const form = event.currentTarget
     const data = new FormData(form)
     const name = String(data.get('name') || '').trim()
     const email = String(data.get('email') || '').trim()
+    const phone = String(data.get('phone') || '').trim()
     if (!name || !email) {
       setErrors(['Please provide both your name and email so we can send the payment link.'])
       return
     }
-    if (course.paystack_url) {
-      window.open(course.paystack_url, '_blank', 'noopener')
-      return
+    setIsSubmitting(true)
+    try {
+      const apiBase = import.meta.env.VITE_API_BASE || ''
+      const response = await fetch(`${apiBase}/api/paystack/initialize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          courseSlug: course.slug,
+          paymentOption: selectedOption,
+        }),
+      })
+
+      const payload = await response.json()
+      if (!response.ok || !payload.authorization_url) {
+        const message = payload?.error || payload?.message || 'Payment setup failed. Please try again.'
+        setErrors([message])
+        return
+      }
+
+      window.location.assign(payload.authorization_url)
+    } catch (error) {
+      setErrors(['Unable to reach the payment server. Please try again shortly.'])
+    } finally {
+      setIsSubmitting(false)
     }
-    setErrors(['Payment setup is not available yet for this course.'])
   }
 
   return (
@@ -144,9 +169,10 @@ export default function Checkout() {
 
               <button
                 type="submit"
-                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal"
+                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={isSubmitting}
               >
-                Proceed to Payment
+                {isSubmitting ? 'Connecting to Paystack...' : 'Proceed to Payment'}
               </button>
             </form>
           </div>
