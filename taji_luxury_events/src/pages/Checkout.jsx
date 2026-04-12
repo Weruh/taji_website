@@ -79,6 +79,7 @@ export default function Checkout() {
 
     setIsSubmitting(true)
     const paymentUrl = getPaymentUrl()
+    console.log('Checkout paymentUrl', paymentUrl)
     try {
       const response = await fetch(paymentUrl, {
         method: 'POST',

@@ -23,6 +23,9 @@ const normalizeKenyanPhone = (value) => {
   if (digits.length === 12 && digits.startsWith('254')) {
     return digits
   }
+  if (digits.length === 13 && digits.startsWith('009254')) {
+    return digits.slice(2)
+  }
   return ''
 }
 
@@ -94,6 +97,7 @@ app.post('/api/paystack/mpesa', async (req, res) => {
 
   const normalizedPhone = normalizeKenyanPhone(phone)
   if (!normalizedPhone) {
+    console.error('Invalid phone payload', { rawPhone: phone, normalizedPhone })
     return res.status(400).json({ status: false, message: 'Invalid phone number format. Use 07XXXXXXXX or +2547XXXXXXXX.' })
   }
 
