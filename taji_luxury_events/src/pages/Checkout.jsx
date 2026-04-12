@@ -76,6 +76,8 @@ export default function Checkout() {
     const amountKES = selectedOption === 'half' ? halfAmount : course.total_fee || 0
     const normalizedPhone = normalizeKenyanPhone(phone)
 
+    console.log('Checkout phone payload', { rawPhone: phone, normalizedPhone })
+
     if (!normalizedPhone) {
       setErrors(['Please provide a valid Kenyan phone number in the format 07XXXXXXXX or +2547XXXXXXXX.'])
       return
@@ -104,6 +106,8 @@ export default function Checkout() {
       })
 
       const result = await response.json().catch(() => ({}))
+      console.log('Checkout payment response', { status: response.status, result })
+
       if (!response.ok || result?.status === false) {
         const message = result?.message || 'Unable to initiate STK push. Please try again.'
         setErrors([message])
