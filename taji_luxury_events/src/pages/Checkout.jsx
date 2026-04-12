@@ -14,7 +14,29 @@ export default function Checkout() {
   const [errors, setErrors] = useState([])
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const apiBase = import.meta.env.VITE_API_BASE || ''
+  const apiBase = import.meta.env.VITE_API_BASE?.trim() || ''
+
+  const getPaymentUrl = () => {
+    try {
+      return new URL('/api/paystack/mpesa', apiBase || window.location.origin).toString()
+    } catch {
+      return '/api/paystack/mpesa'
+    }
+  }
+
+  const normalizeKenyanPhone = (value) => {
+    const digits = String(value || '').replace(/\D/g, '')
+    if (digits.length === 10 && digits.startsWith('0')) {
+      return `254${digits.slice(1)}`
+    }
+    if (digits.length === 9 && digits.startsWith('7')) {
+      return `254${digits}`
+    }
+    if (digits.length === 12 && digits.startsWith('254')) {
+      return digits
+    }
+    return ''
+  }
 
   if (!course) {
     return (
@@ -48,15 +70,26 @@ export default function Checkout() {
     }
 
     const amountKES = selectedOption === 'half' ? halfAmount : course.total_fee || 0
+    const normalizedPhone = normalizeKenyanPhone(phone)
+
+    if (!normalizedPhone) {
+      setErrors(['Please provide a valid Kenyan phone number in the format 07XXXXXXXX or +2547XXXXXXXX.'])
+      return
+    }
+
     setIsSubmitting(true)
+    const paymentUrl = getPaymentUrl()
     try {
-      const response = await fetch(`${apiBase}/api/paystack/mpesa`, {
+      const response = await fetch(paymentUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({
           name,
           email,
-          phone,
+          phone: normalizedPhone,
           amount: amountKES,
           currency: 'KES',
           courseSlug: course.slug,
@@ -75,7 +108,8 @@ export default function Checkout() {
       const displayText = result?.data?.display_text || result?.message || 'STK push sent. Please check your phone to complete the payment.'
       setStatusMessage(displayText)
     } catch (error) {
-      setErrors(['Unable to reach the payment server. Please try again.'])
+      console.error('Checkout payment error', { paymentUrl, error })
+      setErrors([`Unable to reach the payment server. Please try again. (${error?.message || 'Network error'})`])
     } finally {
       setIsSubmitting(false)
     }
@@ -181,7 +215,13 @@ export default function Checkout() {
               </div>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Phone number</span>
-                <input type="tel" name="phone" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" />
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="+2547XXXXXXXX or 07XXXXXXXX"
+                  required
+                  className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none"
+                />
               </label>
 
               <button

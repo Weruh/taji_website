@@ -68,6 +68,10 @@ app.post('/api/paystack/mpesa', async (req, res) => {
     return res.status(500).json({ status: false, message: 'Missing PAYSTACK_SECRET_KEY' })
   }
 
+  if (!callbackUrl) {
+    return res.status(500).json({ status: false, message: 'Missing PAYSTACK_CALLBACK_URL' })
+  }
+
   const { amount, email, phone, name, courseSlug, courseTitle, paymentPlan, currency } = req.body || {}
 
   if (!amount || !email || !phone) {
@@ -112,6 +116,10 @@ app.post('/api/paystack/mpesa', async (req, res) => {
     const result = await response.json().catch(() => ({}))
 
     if (!response.ok || result?.status === false) {
+      console.error('Paystack charge failed', {
+        status: response.status,
+        body: result,
+      })
       return res.status(response.status || 400).json({
         status: false,
         message: result?.message || 'Paystack charge failed',
