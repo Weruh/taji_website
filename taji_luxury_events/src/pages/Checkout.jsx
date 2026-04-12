@@ -10,37 +10,14 @@ const courses = normalizeMediaList(coursesData, ['image'])
 export default function Checkout() {
   const { courseSlug } = useParams()
   const course = useMemo(() => courses.find((item) => item.slug === courseSlug), [courseSlug])
+
   const [selectedOption, setSelectedOption] = useState('full')
   const [errors, setErrors] = useState([])
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
   const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://tajiluxuryevents.onrender.com'
-
-  const getPaymentUrl = () => {
-    try {
-      return new URL('/api/paystack/mpesa', apiBase).toString()
-    } catch {
-      return 'https://tajiluxuryevents.onrender.com/api/paystack/mpesa'
-    }
-  }
-
-  const normalizeKenyanPhone = (value) => {
-    let digits = String(value || '').replace(/\D/g, '')
-    if (digits.startsWith('00')) {
-      digits = digits.slice(2)
-    }
-
-    if (digits.length === 10 && digits.startsWith('0')) {
-      return `254${digits.slice(1)}`
-    }
-    if (digits.length === 9 && digits.startsWith('7')) {
-      return `254${digits}`
-    }
-    if (digits.length === 12 && digits.startsWith('254')) {
-      return digits
-    }
-    return ''
-  }
+  const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
 
   if (!course) {
     return (
@@ -53,71 +30,71 @@ export default function Checkout() {
     )
   }
 
-  const halfAmount = Math.ceil((course.total_fee || 0) / 2)
+  const amountKES = selectedOption === 'half' 
+    ? Math.ceil((course.total_fee || 0) / 2) 
+    : course.total_fee || 0
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
+  const handlePaystackPayment = async () => {
+    if (!paystackPublicKey) {
+      setErrors(['Paystack public key is missing'])
+      return
+    }
+
     setErrors([])
     setStatusMessage('')
-    const form = event.currentTarget
-    const data = new FormData(form)
-    const name = String(data.get('name') || '').trim()
-    const email = String(data.get('email') || '').trim()
-    const phone = String(data.get('phone') || '').trim()
-    if (!name || !email) {
-      setErrors(['Please provide both your name and email so we can send payment updates.'])
-      return
-    }
-    if (!phone) {
-      setErrors(['Phone number is required for M-Pesa STK push.'])
-      return
-    }
-
-    const amountKES = selectedOption === 'half' ? halfAmount : course.total_fee || 0
-    const normalizedPhone = normalizeKenyanPhone(phone)
-
-    if (!normalizedPhone) {
-      setErrors(['Please provide a valid Kenyan phone number in the format 07XXXXXXXX or +2547XXXXXXXX.'])
-      return
-    }
-
     setIsSubmitting(true)
-    const paymentUrl = getPaymentUrl()
-    console.log('Checkout paymentUrl', paymentUrl)
+
     try {
-      const response = await fetch(paymentUrl, {
+      const response = await fetch(`${apiBase}/api/paystack/initialize`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          email,
-          phone: normalizedPhone,
           amount: amountKES,
-          currency: 'KES',
-          courseSlug: course.slug,
+          email: document.getElementById('email').value.trim(),
+          name: document.getElementById('name').value.trim(),
           courseTitle: course.title,
-          paymentPlan: selectedOption === 'half' ? '50% deposit' : 'Full payment',
         }),
       })
 
-      const result = await response.json().catch(() => ({}))
+      const data = await response.json()
 
-      if (!response.ok || result?.status === false) {
-        const message = result?.message || 'Unable to initiate STK push. Please try again.'
-        setErrors([message])
+      if (!data.status) {
+        setErrors([data.message || 'Failed to initialize payment'])
         return
       }
 
-      const displayText = result?.data?.display_text || result?.message || 'STK push sent. Please check your phone to complete the payment.'
-      setStatusMessage(displayText)
+      const handler = window.PaystackPop.setup({
+        key: paystackPublicKey,
+        email: document.getElementById('email').value.trim(),
+        amount: amountKES * 100,
+        currency: 'KES',
+        ref: data.reference,
+        access_code: data.access_code,
+        channels: ['mobile_money', 'card'],
+
+        onSuccess: (transaction) => {
+          window.location.href = `/success?reference=${transaction.reference}`
+        },
+
+        onCancel: () => {
+          setStatusMessage('Payment was cancelled')
+          setIsSubmitting(false)
+        },
+
+        onError: (error) => {
+          console.error(error)
+          setErrors(['Payment error occurred. Please try again.'])
+          setIsSubmitting(false)
+        }
+      })
+
+      handler.openIframe()
+
     } catch (error) {
-      console.error('Checkout payment error', { paymentUrl, error })
-      setErrors([`Unable to reach the payment server. Please try again. (${error?.message || 'Network error'})`])
+      console.error(error)
+      setErrors(['Unable to connect to payment gateway'])
     } finally {
-      setIsSubmitting(false)
+      // setIsSubmitting(false) removed because we redirect on success
     }
   }
 
@@ -131,6 +108,7 @@ export default function Checkout() {
             { label: 'Checkout' },
           ]}
         />
+
         <div className="space-y-2">
           <p className="uppercase text-xs tracking-[0.5em] text-gold">Academy</p>
           <h1 className="text-4xl font-playfair">{course.title}</h1>
@@ -163,21 +141,22 @@ export default function Checkout() {
 
           <div className="rounded-3xl border border-white/10 bg-charcoal/60 p-8 space-y-6">
             <h2 className="text-2xl font-playfair text-ivory">Secure your seat</h2>
-            {errors.length ? (
-              <div className="space-y-2 rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-100">
-                {errors.map((error) => (
-                  <p key={error}>{error}</p>
-                ))}
+
+            {errors.length > 0 && (
+              <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 p-4 text-sm text-rose-100">
+                {errors.map((err, i) => <p key={i}>{err}</p>)}
               </div>
-            ) : null}
-            {statusMessage ? (
-              <div className="space-y-2 rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-4 text-sm text-emerald-100">
+            )}
+
+            {statusMessage && (
+              <div className="rounded-2xl border border-emerald-400/40 bg-emerald-400/10 p-4 text-sm text-emerald-100">
                 <p>{statusMessage}</p>
               </div>
-            ) : null}
+            )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-2 text-xs uppercase tracking-[0.4em] text-gold/70">Payment option</div>
+              
               <fieldset className="space-y-2">
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
@@ -186,25 +165,22 @@ export default function Checkout() {
                   </div>
                   <input
                     type="radio"
-                    name="payment_option"
-                    value="full"
-                    className="h-4 w-4 accent-gold"
                     checked={selectedOption === 'full'}
                     onChange={() => setSelectedOption('full')}
+                    className="h-4 w-4 accent-gold"
                   />
                 </label>
+
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
                     <div className="font-semibold">50% deposit</div>
-                    <div className="text-xs text-mist/70">KES {formatKES(halfAmount)}</div>
+                    <div className="text-xs text-mist/70">KES {formatKES(Math.ceil(course.total_fee / 2))}</div>
                   </div>
                   <input
                     type="radio"
-                    name="payment_option"
-                    value="half"
-                    className="h-4 w-4 accent-gold"
                     checked={selectedOption === 'half'}
                     onChange={() => setSelectedOption('half')}
+                    className="h-4 w-4 accent-gold"
                   />
                 </label>
               </fieldset>
@@ -212,30 +188,21 @@ export default function Checkout() {
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block text-sm text-ivory/80">
                   <span className="block mb-1">Full name</span>
-                  <input type="text" name="name" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
+                  <input id="name" type="text" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
                 </label>
                 <label className="block text-sm text-ivory/80">
                   <span className="block mb-1">Email</span>
-                  <input type="email" name="email" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
+                  <input id="email" type="email" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
                 </label>
               </div>
-              <label className="block text-sm text-ivory/80">
-                <span className="block mb-1">Phone number</span>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="+2547XXXXXXXX or 07XXXXXXXX"
-                  required
-                  className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none"
-                />
-              </label>
 
               <button
-                type="submit"
-                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-70"
+                type="button"
+                onClick={handlePaystackPayment}
                 disabled={isSubmitting}
+                className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {isSubmitting ? 'Sending STK Push...' : 'Send STK Push'}
+                {isSubmitting ? 'Processing...' : `Pay Now - KES ${formatKES(amountKES)}`}
               </button>
             </form>
           </div>

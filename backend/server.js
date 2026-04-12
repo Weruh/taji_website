@@ -10,32 +10,10 @@ const port = process.env.PORT || 10000
 const paystackSecret = process.env.PAYSTACK_SECRET_KEY
 const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
+
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
-const normalizeKenyanPhone = (value) => {
-    if (!value) return '';
-
-    // Remove all non-digits
-    let digits = String(value).replace(/\D/g, '').trim();
-
-    // Handle different input formats
-    if (digits.startsWith('0') && digits.length === 10) {
-        digits = '254' + digits.slice(1);           // 07xxxxxxxx → 2547xxxxxxxx
-    } 
-    else if ((digits.startsWith('7') || digits.startsWith('1')) && digits.length === 9) {
-        digits = '254' + digits;                    // 7xxxxxxxx → 2547xxxxxxxx
-    } 
-    else if (digits.startsWith('254') && digits.length === 12) {
-        // Already good, do nothing
-    } 
-    else {
-        return ''; // Invalid
-    }
-
-    // ← THIS IS THE KEY FIX
-    return '+' + digits;   // Must return +2547xxxxxxxx
-};
-
+// ====================== CORS SETUP ======================
 const allowedOrigins = clientOrigin.split(',').map((o) => o.trim()).filter(Boolean)
 const allowAll = allowedOrigins.includes('*') || allowedOrigins.length === 0
 const normalizedOrigins = new Set(allowedOrigins)
@@ -51,41 +29,37 @@ app.use(cors({
 
 app.use(express.json())
 
-app.post('/api/paystack/mpesa', async (req, res) => {
+// ====================== NEW ENDPOINT - FOR POPUP ======================
+app.post('/api/paystack/initialize', async (req, res) => {
     try {
-        const { amount, email, phone, name, courseTitle, currency } = req.body || {}
+        const { amount, email, name, courseTitle } = req.body || {}
 
-        const normalizedPhone = normalizeKenyanPhone(phone)
-        
-        if (!normalizedPhone) {
-            return res.status(400).json({ status: false, message: 'Invalid phone format.' })
+        if (!email || !amount) {
+            return res.status(400).json({ 
+                status: false, 
+                message: 'Email and amount are required' 
+            })
         }
 
         const amountInSubunit = Math.round(Number(amount) * 100)
-        const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
+        const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
 
-        // 2. We use a simpler, cleaner payload
         const payload = {
-            email: email.trim(),
+            email: email.trim().toLowerCase(),
             amount: amountInSubunit,
             currency: 'KES',
             reference,
             callback_url: callbackUrl,
-            mobile_money: {
-                phone: normalizedPhone, 
-                provider: 'mpesa',
-            },
-            // Simplified metadata to prevent validation issues
-            metadata: { 
+            metadata: {
                 customer_name: name || "Customer",
                 course: courseTitle || "Event"
-            },
+            }
         }
 
-        console.log(`--- DEBUG: Sending to Paystack ---`)
-        console.log(`Phone: ${normalizedPhone} | Amount: ${amountInSubunit} | Currency: KES`)
+        console.log('--- Initializing Paystack Transaction ---')
+        console.log(`Reference: ${reference} | Amount: ${amountInSubunit} | Email: ${email}`)
 
-        const response = await fetch('https://api.paystack.co/charge', {
+        const response = await fetch('https://api.paystack.co/transaction/initialize', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${paystackSecret}`,
@@ -96,22 +70,65 @@ app.post('/api/paystack/mpesa', async (req, res) => {
 
         const result = await response.json()
 
-        if (!response.ok || result.status === false) {
-            console.error('PAYSTACK FULL ERROR:', JSON.stringify(result, null, 2))
+        if (result.status === true) {
+            return res.json({
+                status: true,
+                access_code: result.data.access_code,
+                reference: result.data.reference,
+                authorization_url: result.data.authorization_url
+            })
+        } else {
+            console.error('Paystack Initialize Error:', result)
             return res.status(400).json({
                 status: false,
-                message: result.message || 'Payment provider rejected the request',
+                message: result.message || 'Failed to initialize payment'
             })
         }
 
-        res.json({ status: true, message: result.message, data: result.data })
-
     } catch (error) {
-        console.error('SERVER CRASH:', error)
-        res.status(500).json({ status: false, message: 'Internal server error.' })
+        console.error('Initialize Server Error:', error)
+        res.status(500).json({ status: false, message: 'Internal server error' })
     }
+})
+
+// ====================== (Optional but Recommended) Verify Payment ======================
+app.get('/api/paystack/verify/:reference', async (req, res) => {
+    try {
+        const { reference } = req.params
+
+        const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${paystackSecret}`,
+            }
+        })
+
+        const result = await response.json()
+
+        if (result.status === true && result.data.status === 'success') {
+            // Payment successful → You can update your database here
+            return res.json({ status: true, data: result.data })
+        } else {
+            return res.status(400).json({ 
+                status: false, 
+                message: result.message || 'Payment not successful' 
+            })
+        }
+    } catch (error) {
+        console.error('Verify Error:', error)
+        res.status(500).json({ status: false, message: 'Verification failed' })
+    }
+})
+
+// Old endpoint (kept for now in case you need it later)
+app.post('/api/paystack/mpesa', (req, res) => {
+    res.status(410).json({ 
+        status: false, 
+        message: 'This endpoint is deprecated. Use /api/paystack/initialize instead for better UX.' 
+    })
 })
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
-app.listen(port, () => console.log(`Backend running on port ${port}`))
+app.listen(port, () => {
+    console.log(`Backend running on port ${port}`)
+})
