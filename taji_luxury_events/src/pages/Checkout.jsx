@@ -25,7 +25,11 @@ export default function Checkout() {
   }
 
   const normalizeKenyanPhone = (value) => {
-    const digits = String(value || '').replace(/\D/g, '')
+    let digits = String(value || '').replace(/\D/g, '')
+    if (digits.startsWith('00')) {
+      digits = digits.slice(2)
+    }
+
     if (digits.length === 10 && digits.startsWith('0')) {
       return `254${digits.slice(1)}`
     }
