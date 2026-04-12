@@ -12,191 +12,164 @@ const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
+// --- HELPER: PHONE NORMALIZATION ---
+// Converts inputs (07..., +254..., 7...) into the 2547XXXXXXXX format
 const normalizeKenyanPhone = (value) => {
-  let digits = String(value || '').replace(/\D/g, '')
-  if (digits.startsWith('00')) {
-    digits = digits.slice(2)
-  }
-
-  if (digits.length === 10 && digits.startsWith('0')) {
-    return `254${digits.slice(1)}`
-  }
-  if (digits.length === 9 && digits.startsWith('7')) {
-    return `254${digits}`
-  }
-  if (digits.length === 12 && digits.startsWith('254')) {
-    return digits
-  }
-  return ''
+    let digits = String(value || '').replace(/\D/g, '') // Remove all non-digits
+    
+    // If it starts with 07 or 01, replace 0 with 254
+    if (digits.length === 10 && digits.startsWith('0')) {
+        return `254${digits.slice(1)}`
+    }
+    // If it's 9 digits (7XXXXXXXX), add 254
+    if (digits.length === 9 && (digits.startsWith('7') || digits.startsWith('1'))) {
+        return `254${digits}`
+    }
+    // If it's already 12 digits and starts with 254, return as is
+    if (digits.length === 12 && digits.startsWith('254')) {
+        return digits
+    }
+    return '' // Invalid
 }
 
+// --- CORS CONFIGURATION ---
 const allowedOrigins = clientOrigin
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean)
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
 
 const allowAll = allowedOrigins.includes('*') || allowedOrigins.length === 0
 const normalizedOrigins = new Set(allowedOrigins)
 fallbackProdOrigins.forEach((origin) => normalizedOrigins.add(origin))
 
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (allowAll) return callback(null, true)
-      if (!origin) return callback(null, true)
-      if (normalizedOrigins.has(origin)) return callback(null, true)
-      return callback(null, false)
-    },
-    methods: ['GET', 'POST', 'OPTIONS'],
-  })
+    cors({
+        origin: (origin, callback) => {
+            if (allowAll || !origin || normalizedOrigins.has(origin)) {
+                return callback(null, true)
+            }
+            return callback(null, false)
+        },
+        methods: ['GET', 'POST', 'OPTIONS'],
+    })
 )
 
+// --- ROUTES ---
+
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok' })
+    res.json({ status: 'ok' })
 })
 
+// Webhook Route (Uses raw body for signature verification)
 app.post('/api/paystack/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  if (!paystackSecret) {
-    return res.status(500).send('Missing PAYSTACK_SECRET_KEY')
-  }
+    if (!paystackSecret) return res.status(500).send('Missing Secret Key')
 
-  const signature = req.headers['x-paystack-signature']
-  const hash = crypto.createHmac('sha512', paystackSecret).update(req.body).digest('hex')
+    const signature = req.headers['x-paystack-signature']
+    const hash = crypto.createHmac('sha512', paystackSecret).update(req.body).digest('hex')
 
-  if (hash !== signature) {
-    return res.status(400).send('Invalid signature')
-  }
+    if (hash !== signature) return res.status(400).send('Invalid signature')
 
-  const event = JSON.parse(req.body.toString('utf8'))
-  if (event?.event === 'charge.success') {
-    console.log('Paystack charge success', {
-      reference: event?.data?.reference,
-      amount: event?.data?.amount,
-      customer: event?.data?.customer?.email,
-    })
-  }
-
-  res.sendStatus(200)
+    const event = JSON.parse(req.body.toString('utf8'))
+    if (event?.event === 'charge.success') {
+        console.log('Payment Successful:', event.data.reference)
+    }
+    res.sendStatus(200)
 })
 
+// JSON Middleware for standard routes
 app.use(express.json())
 
+// MAIN MPESA CHARGE ROUTE
 app.post('/api/paystack/mpesa', async (req, res) => {
-  if (!paystackSecret) {
-    return res.status(500).json({ status: false, message: 'Missing PAYSTACK_SECRET_KEY' })
-  }
+    try {
+        if (!paystackSecret || !callbackUrl) {
+            return res.status(500).json({ status: false, message: 'Server configuration error (Keys missing).' })
+        }
 
-  if (!callbackUrl) {
-    return res.status(500).json({ status: false, message: 'Missing PAYSTACK_CALLBACK_URL' })
-  }
+        const { amount, email, phone, name, courseSlug, courseTitle, paymentPlan, currency } = req.body || {}
 
-  const { amount, email, phone, name, courseSlug, courseTitle, paymentPlan, currency } = req.body || {}
+        // 1. Validate Input
+        if (!amount || !email || !phone) {
+            return res.status(400).json({ status: false, message: 'Missing required fields (amount, email, phone).' })
+        }
 
-  if (!amount || !email || !phone) {
-    return res.status(400).json({ status: false, message: 'Amount, email, and phone are required.' })
-  }
+        // 2. Normalize Phone
+        const normalizedPhone = normalizeKenyanPhone(phone)
+        if (!normalizedPhone) {
+            return res.status(400).json({ status: false, message: 'Invalid phone format. Please use 07XXXXXXXX.' })
+        }
 
-  const normalizedPhone = normalizeKenyanPhone(phone)
-  if (!normalizedPhone) {
-    console.error('Invalid phone payload', { rawPhone: phone, normalizedPhone })
-    return res.status(400).json({ status: false, message: 'Invalid phone number format. Use 07XXXXXXXX or +2547XXXXXXXX.' })
-  }
+        const amountInSubunit = Math.round(Number(amount) * 100)
+        const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 
-  const amountInSubunit = Math.round(Number(amount) * 100)
-  if (!Number.isFinite(amountInSubunit) || amountInSubunit <= 0) {
-    return res.status(400).json({ status: false, message: 'Amount must be greater than zero.' })
-  }
+        // 3. Prepare Payload
+        const payload = {
+            email,
+            amount: amountInSubunit,
+            currency: currency || 'KES',
+            reference,
+            callback_url: callbackUrl,
+            mobile_money: {
+                phone: normalizedPhone,
+                provider: 'mpesa',
+            },
+            metadata: {
+                name,
+                course_slug: courseSlug,
+                course_title: courseTitle,
+                payment_plan: paymentPlan,
+            },
+        }
 
-  const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+        console.log('Sending to Paystack:', normalizedPhone)
 
-  const payload = {
-    email,
-    amount: amountInSubunit,
-    currency: currency || 'KES',
-    reference,
-    callback_url: callbackUrl,
-    mobile_money: {
-      phone: normalizedPhone,
-      provider: 'mpesa',
-    },
-    metadata: {
-      name,
-      course_slug: courseSlug,
-      course_title: courseTitle,
-      payment_plan: paymentPlan,
-    },
-  }
+        // 4. Call Paystack API
+        const response = await fetch('https://api.paystack.co/charge', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${paystackSecret}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
 
-  try {
-    const response = await fetch('https://api.paystack.co/charge', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${paystackSecret}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
+        const result = await response.json()
 
-    const result = await response.json().catch(() => ({}))
+        if (!response.ok || result.status === false) {
+            console.error('Paystack Error:', result)
+            return res.status(response.status || 400).json({
+                status: false,
+                message: result.message || 'Transaction failed',
+            })
+        }
 
-    if (!response.ok || result?.status === false) {
-      console.error('Paystack charge failed', {
-        status: response.status,
-        body: result,
-      })
-      return res.status(response.status || 400).json({
-        status: false,
-        message: result?.message || 'Paystack charge failed',
-        data: result?.data,
-      })
+        // Success
+        res.json({
+            status: true,
+            message: result.message,
+            data: result.data,
+        })
+
+    } catch (error) {
+        console.error('Server Error:', error)
+        res.status(500).json({ status: false, message: 'Internal server error.' })
     }
-
-    res.json({
-      status: true,
-      message: result?.message || 'Charge attempted',
-      data: result?.data,
-    })
-  } catch (error) {
-    res.status(500).json({ status: false, message: 'Unable to reach Paystack.' })
-  }
 })
 
+// VERIFY TRANSACTION ROUTE
 app.get('/api/paystack/verify/:reference', async (req, res) => {
-  if (!paystackSecret) {
-    return res.status(500).json({ status: false, message: 'Missing PAYSTACK_SECRET_KEY' })
-  }
-
-  const { reference } = req.params
-  if (!reference) {
-    return res.status(400).json({ status: false, message: 'Reference is required.' })
-  }
-
-  try {
-    const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
-      headers: {
-        Authorization: `Bearer ${paystackSecret}`,
-      },
-    })
-
-    const result = await response.json().catch(() => ({}))
-    if (!response.ok || result?.status === false) {
-      return res.status(response.status || 400).json({
-        status: false,
-        message: result?.message || 'Verification failed',
-        data: result?.data,
-      })
+    const { reference } = req.params
+    try {
+        const response = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: { Authorization: `Bearer ${paystackSecret}` },
+        })
+        const result = await response.json()
+        res.status(response.status).json(result)
+    } catch (error) {
+        res.status(500).json({ status: false, message: 'Verification failed.' })
     }
-
-    res.json({
-      status: true,
-      message: result?.message || 'Verification complete',
-      data: result?.data,
-    })
-  } catch (error) {
-    res.status(500).json({ status: false, message: 'Unable to verify transaction.' })
-  }
 })
 
 app.listen(port, () => {
-  console.log(`Paystack backend running on port ${port}`)
+    console.log(`Server running on port ${port}`)
 })
