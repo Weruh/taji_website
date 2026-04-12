@@ -14,13 +14,13 @@ export default function Checkout() {
   const [errors, setErrors] = useState([])
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const apiBase = import.meta.env.VITE_API_BASE?.trim() || ''
+  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://tajiluxuryevents.onrender.com'
 
   const getPaymentUrl = () => {
     try {
-      return new URL('/api/paystack/mpesa', apiBase || window.location.origin).toString()
+      return new URL('/api/paystack/mpesa', apiBase).toString()
     } catch {
-      return '/api/paystack/mpesa'
+      return 'https://tajiluxuryevents.onrender.com/api/paystack/mpesa'
     }
   }
 
