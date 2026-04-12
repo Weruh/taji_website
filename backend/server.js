@@ -12,27 +12,25 @@ const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
-// --- HELPER: PHONE NORMALIZATION ---
-// Converts inputs (07..., +254..., 7...) into the 2547XXXXXXXX format
+// --- HELPER: PHONE NORMALIZATION (Converts to LOCAL 07... format) ---
 const normalizeKenyanPhone = (value) => {
-    let digits = String(value || '').replace(/\D/g, '') // Remove all non-digits
+    let digits = String(value || '').replace(/\D/g, '') // Remove spaces, +, etc.
     
-    // If it starts with 07 or 01, replace 0 with 254
-    if (digits.length === 10 && digits.startsWith('0')) {
-        return `254${digits.slice(1)}`
-    }
-    // If it's 9 digits (7XXXXXXXX), add 254
-    if (digits.length === 9 && (digits.startsWith('7') || digits.startsWith('1'))) {
-        return `254${digits}`
-    }
-    // If it's already 12 digits and starts with 254, return as is
+    // If user typed 2547XXXXXXXX (12 digits), convert to 07XXXXXXXX
     if (digits.length === 12 && digits.startsWith('254')) {
+        return `0${digits.slice(3)}`
+    }
+    // If user typed 07XXXXXXXX (10 digits), it's already correct
+    if (digits.length === 10 && digits.startsWith('0')) {
         return digits
     }
-    return '' // Invalid
+    // If user typed 7XXXXXXXX (9 digits), add the leading 0
+    if (digits.length === 9 && (digits.startsWith('7') || digits.startsWith('1'))) {
+        return `0${digits}`
+    }
+    return '' // Invalid format
 }
 
-// --- CORS CONFIGURATION ---
 const allowedOrigins = clientOrigin
     .split(',')
     .map((origin) => origin.trim())
@@ -54,55 +52,34 @@ app.use(
     })
 )
 
-// --- ROUTES ---
+app.get('/health', (req, res) => { res.json({ status: 'ok' }) })
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok' })
-})
-
-// Webhook Route (Uses raw body for signature verification)
 app.post('/api/paystack/webhook', express.raw({ type: 'application/json' }), (req, res) => {
     if (!paystackSecret) return res.status(500).send('Missing Secret Key')
-
     const signature = req.headers['x-paystack-signature']
     const hash = crypto.createHmac('sha512', paystackSecret).update(req.body).digest('hex')
-
     if (hash !== signature) return res.status(400).send('Invalid signature')
-
-    const event = JSON.parse(req.body.toString('utf8'))
-    if (event?.event === 'charge.success') {
-        console.log('Payment Successful:', event.data.reference)
-    }
     res.sendStatus(200)
 })
 
-// JSON Middleware for standard routes
 app.use(express.json())
 
 // MAIN MPESA CHARGE ROUTE
 app.post('/api/paystack/mpesa', async (req, res) => {
     try {
-        if (!paystackSecret || !callbackUrl) {
-            return res.status(500).json({ status: false, message: 'Server configuration error (Keys missing).' })
-        }
-
         const { amount, email, phone, name, courseSlug, courseTitle, paymentPlan, currency } = req.body || {}
 
-        // 1. Validate Input
-        if (!amount || !email || !phone) {
-            return res.status(400).json({ status: false, message: 'Missing required fields (amount, email, phone).' })
-        }
-
-        // 2. Normalize Phone
+        // 1. Normalize to LOCAL format (07...)
         const normalizedPhone = normalizeKenyanPhone(phone)
+        
         if (!normalizedPhone) {
+            console.error('Normalization failed for:', phone)
             return res.status(400).json({ status: false, message: 'Invalid phone format. Please use 07XXXXXXXX.' })
         }
 
         const amountInSubunit = Math.round(Number(amount) * 100)
         const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 
-        // 3. Prepare Payload
         const payload = {
             email,
             amount: amountInSubunit,
@@ -110,20 +87,14 @@ app.post('/api/paystack/mpesa', async (req, res) => {
             reference,
             callback_url: callbackUrl,
             mobile_money: {
-                phone: normalizedPhone,
+                phone: normalizedPhone, // Now sends 07XXXXXXXX
                 provider: 'mpesa',
             },
-            metadata: {
-                name,
-                course_slug: courseSlug,
-                course_title: courseTitle,
-                payment_plan: paymentPlan,
-            },
+            metadata: { name, course_slug: courseSlug, course_title: courseTitle, payment_plan: paymentPlan },
         }
 
         console.log('Sending to Paystack:', normalizedPhone)
 
-        // 4. Call Paystack API
         const response = await fetch('https://api.paystack.co/charge', {
             method: 'POST',
             headers: {
@@ -136,27 +107,22 @@ app.post('/api/paystack/mpesa', async (req, res) => {
         const result = await response.json()
 
         if (!response.ok || result.status === false) {
-            console.error('Paystack Error:', result)
-            return res.status(response.status || 400).json({
+            console.error('Paystack API Error Response:', JSON.stringify(result, null, 2))
+            return res.status(400).json({
                 status: false,
-                message: result.message || 'Transaction failed',
+                message: result.message || 'Paystack rejected the request',
+                details: result.data // This helps see exactly what Paystack disliked
             })
         }
 
-        // Success
-        res.json({
-            status: true,
-            message: result.message,
-            data: result.data,
-        })
+        res.json({ status: true, message: result.message, data: result.data })
 
     } catch (error) {
-        console.error('Server Error:', error)
+        console.error('Backend Crash Error:', error)
         res.status(500).json({ status: false, message: 'Internal server error.' })
     }
 })
 
-// VERIFY TRANSACTION ROUTE
 app.get('/api/paystack/verify/:reference', async (req, res) => {
     const { reference } = req.params
     try {
@@ -170,6 +136,4 @@ app.get('/api/paystack/verify/:reference', async (req, res) => {
     }
 })
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`)
-})
+app.listen(port, () => { console.log(`Server running on port ${port}`) })
