@@ -12,6 +12,20 @@ const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
+const normalizeKenyanPhone = (value) => {
+  const digits = String(value || '').replace(/\D/g, '')
+  if (digits.length === 10 && digits.startsWith('0')) {
+    return `254${digits.slice(1)}`
+  }
+  if (digits.length === 9 && digits.startsWith('7')) {
+    return `254${digits}`
+  }
+  if (digits.length === 12 && digits.startsWith('254')) {
+    return digits
+  }
+  return ''
+}
+
 const allowedOrigins = clientOrigin
   .split(',')
   .map((origin) => origin.trim())
@@ -78,6 +92,11 @@ app.post('/api/paystack/mpesa', async (req, res) => {
     return res.status(400).json({ status: false, message: 'Amount, email, and phone are required.' })
   }
 
+  const normalizedPhone = normalizeKenyanPhone(phone)
+  if (!normalizedPhone) {
+    return res.status(400).json({ status: false, message: 'Invalid phone number format. Use 07XXXXXXXX or +2547XXXXXXXX.' })
+  }
+
   const amountInSubunit = Math.round(Number(amount) * 100)
   if (!Number.isFinite(amountInSubunit) || amountInSubunit <= 0) {
     return res.status(400).json({ status: false, message: 'Amount must be greater than zero.' })
@@ -92,7 +111,7 @@ app.post('/api/paystack/mpesa', async (req, res) => {
     reference,
     callback_url: callbackUrl,
     mobile_money: {
-      phone,
+      phone: normalizedPhone,
       provider: 'mpesa',
     },
     metadata: {
