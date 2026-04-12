@@ -1,113 +1,127 @@
-﻿import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import crypto from 'crypto';
+﻿import crypto from 'crypto'
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
-const PORT = process.env.PORT || 4242;
+const app = express()
+const port = process.env.PORT || 10000
+const paystackSecret = process.env.PAYSTACK_SECRET_KEY
+const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
+const clientOrigin = process.env.CLIENT_ORIGIN || ''
+const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
-// 1. CORS Setup
-const allowedOrigins = [
-  'https://www.tajiluxuryevents.com',
-  'https://tajiluxuryevents.com',
-  'http://localhost:5173'
-];
+// --- THE CRITICAL FIX: Ensure format is ALWAYS 07XXXXXXXX ---
+const normalizeKenyanPhone = (value) => {
+    let digits = String(value || '').replace(/\D/g, '') // Remove spaces, +, etc.
+    
+    // If it's 2547... (12 digits), convert to 07...
+    if (digits.length === 12 && digits.startsWith('254')) {
+        return `0${digits.slice(3)}`
+    }
+    // If it's already 07... or 01... (10 digits), return it
+    if (digits.length === 10 && digits.startsWith('0')) {
+        return digits
+    }
+    // If it's 7... or 1... (9 digits), add the leading 0
+    if (digits.length === 9 && (digits.startsWith('7') || digits.startsWith('1'))) {
+        return `0${digits}`
+    }
+    return '' // Invalid format
+}
+
+const allowedOrigins = clientOrigin.split(',').map((o) => o.trim()).filter(Boolean)
+const allowAll = allowedOrigins.includes('*') || allowedOrigins.length === 0
+const normalizedOrigins = new Set(allowedOrigins)
+fallbackProdOrigins.forEach((o) => normalizedOrigins.add(o))
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
-    else callback(new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'OPTIONS'],
-  credentials: true
-}));
+    origin: (origin, callback) => {
+        if (allowAll || !origin || normalizedOrigins.has(origin)) return callback(null, true)
+        return callback(null, false)
+    },
+    methods: ['GET', 'POST', 'OPTIONS'],
+}))
 
-// 2. Body Parsers
-// Webhook first (requires raw body for signature verification)
+app.get('/health', (req, res) => res.json({ status: 'ok' }))
+
 app.post('/api/paystack/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const secret = process.env.PAYSTACK_SECRET_KEY;
-  const signature = req.headers['x-paystack-signature'];
-  const hash = crypto.createHmac('sha512', secret).update(req.body).digest('hex');
+    if (!paystackSecret) return res.status(500).send('Missing Secret Key')
+    const signature = req.headers['x-paystack-signature']
+    const hash = crypto.createHmac('sha512', paystackSecret).update(req.body).digest('hex')
+    if (hash !== signature) return res.status(400).send('Invalid signature')
+    res.sendStatus(200)
+})
 
-  if (hash === signature) {
-    const event = JSON.parse(req.body.toString('utf-8'));
-    if (event.event === 'charge.success') {
-      console.log('✅ Payment Success:', event.data.reference);
-    }
-  }
-  res.sendStatus(200);
-});
+app.use(express.json())
 
-// JSON parser for all other routes
-app.use(express.json());
-
-// 3. THE FIX: Phone Number Formatter Function
-const formatMpesaNumber = (phone) => {
-  // Remove spaces, dashes, and the '+' sign
-  let cleaned = phone.replace(/\D/g, '');
-
-  // If it starts with '0', replace '0' with '254' (e.g., 0794... becomes 254794...)
-  if (cleaned.startsWith('0')) {
-    cleaned = '254' + cleaned.substring(1);
-  }
-
-  // If the user only typed 9 digits (e.g., 794...), add '254'
-  if (cleaned.length === 9) {
-    cleaned = '254' + cleaned;
-  }
-
-  return cleaned;
-};
-
-// 4. M-Pesa STK Push Route
 app.post('/api/paystack/mpesa', async (req, res) => {
-  const { amount, email, phone, name } = req.body;
+    try {
+        const { amount, email, phone, name, courseSlug, courseTitle, paymentPlan, currency } = req.body || {}
 
-  if (!amount || !email || !phone) {
-    return res.status(400).json({ status: false, message: 'Missing fields' });
-  }
+        // 1. Convert to LOCAL format (07XXXXXXXX)
+        const normalizedPhone = normalizeKenyanPhone(phone)
+        console.log(`Log: Input [${phone}] -> Formatted for Paystack [${normalizedPhone}]`)
 
-  // APPLY THE FIX HERE
-  const formattedPhone = formatMpesaNumber(phone);
-  
-  // LOG THIS to your Render console to verify it changed from 07... to 2547...
-  console.log(`Original: ${phone} -> Formatted for Paystack: ${formattedPhone}`);
+        if (!normalizedPhone) {
+            return res.status(400).json({ status: false, message: 'Invalid phone number. Use 07XXXXXXXX format.' })
+        }
 
-  try {
-    const response = await fetch('https://api.paystack.co/charge', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        amount: Math.round(Number(amount) * 100), // KES to Cents
-        currency: 'KES',
-        mobile_money: {
-          phone: formattedPhone, // Uses the 254... version
-          provider: 'mpesa',
-        },
-        metadata: { name },
-      }),
-    });
+        const amountInSubunit = Math.round(Number(amount) * 100)
+        const reference = `taji_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
 
-    const data = await response.json();
+        const payload = {
+            email,
+            amount: amountInSubunit,
+            currency: currency || 'KES',
+            reference,
+            callback_url: callbackUrl,
+            mobile_money: {
+                phone: normalizedPhone, 
+                provider: 'mpesa',
+            },
+            metadata: { name, course_slug: courseSlug, course_title: courseTitle, payment_plan: paymentPlan },
+        }
 
-    if (!response.ok) {
-      console.error('Paystack Error Response:', data);
-      return res.status(response.status).json(data);
+        const response = await fetch('https://api.paystack.co/charge', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${paystackSecret}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        })
+
+        const result = await response.json()
+
+        if (!response.ok || result.status === false) {
+            console.error('Paystack API Error:', JSON.stringify(result, null, 2))
+            return res.status(400).json({
+                status: false,
+                message: result.message || 'Transaction rejected by payment provider',
+                error_code: result.data?.code
+            })
+        }
+
+        res.json({ status: true, message: result.message, data: result.data })
+
+    } catch (error) {
+        console.error('Server Crash:', error)
+        res.status(500).json({ status: false, message: 'Internal server error.' })
     }
+})
 
-    return res.status(200).json(data);
-  } catch (error) {
-    console.error('Server Error:', error);
-    return res.status(500).json({ status: false, message: 'Internal Server Error' });
-  }
-});
+app.get('/api/paystack/verify/:reference', async (req, res) => {
+    try {
+        const response = await fetch(`https://api.paystack.co/transaction/verify/${req.params.reference}`, {
+            headers: { Authorization: `Bearer ${paystackSecret}` },
+        })
+        const result = await response.json()
+        res.status(response.status).json(result)
+    } catch (error) {
+        res.status(500).json({ status: false, message: 'Verification failed.' })
+    }
+})
 
-app.get('/health', (req, res) => res.status(200).send('OK'));
-
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.listen(port, () => console.log(`Backend running on port ${port}`))
