@@ -12,21 +12,29 @@ const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
 
-// --- THE FIX: We will try the 254 format one last time with strict trimming ---
 const normalizeKenyanPhone = (value) => {
-    let digits = String(value || '').replace(/\D/g, '').trim()
-    
+    if (!value) return '';
+
+    // Remove all non-digits
+    let digits = String(value).replace(/\D/g, '').trim();
+
+    // Handle different input formats
     if (digits.startsWith('0') && digits.length === 10) {
-        return '254' + digits.slice(1);
+        digits = '254' + digits.slice(1);           // 07xxxxxxxx → 2547xxxxxxxx
+    } 
+    else if ((digits.startsWith('7') || digits.startsWith('1')) && digits.length === 9) {
+        digits = '254' + digits;                    // 7xxxxxxxx → 2547xxxxxxxx
+    } 
+    else if (digits.startsWith('254') && digits.length === 12) {
+        // Already good, do nothing
+    } 
+    else {
+        return ''; // Invalid
     }
-    if ((digits.startsWith('7') || digits.startsWith('1')) && digits.length === 9) {
-        return '254' + digits;
-    }
-    if (digits.startsWith('254') && digits.length === 12) {
-        return digits;
-    }
-    return '';
-}
+
+    // ← THIS IS THE KEY FIX
+    return '+' + digits;   // Must return +2547xxxxxxxx
+};
 
 const allowedOrigins = clientOrigin.split(',').map((o) => o.trim()).filter(Boolean)
 const allowAll = allowedOrigins.includes('*') || allowedOrigins.length === 0
