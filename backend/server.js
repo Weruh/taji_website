@@ -12,12 +12,14 @@ const callbackUrl = process.env.PAYSTACK_CALLBACK_URL
 const clientOrigin = process.env.CLIENT_ORIGIN || ''
 
 const fallbackProdOrigins = ['https://www.tajiluxuryevents.com', 'https://tajiluxuryevents.com']
+const fallbackDevOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://127.0.0.1:5173', 'http://127.0.0.1:5174']
 
 // ====================== CORS SETUP ======================
 const allowedOrigins = clientOrigin.split(',').map((o) => o.trim()).filter(Boolean)
 const allowAll = allowedOrigins.includes('*') || allowedOrigins.length === 0
 const normalizedOrigins = new Set(allowedOrigins)
 fallbackProdOrigins.forEach((o) => normalizedOrigins.add(o))
+fallbackDevOrigins.forEach((o) => normalizedOrigins.add(o))
 
 app.use(cors({
     origin: (origin, callback) => {

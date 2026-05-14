@@ -3,7 +3,7 @@ import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import CardCourse from '../components/CardCourse.jsx'
 import coursesData from '../data/courses.json'
 import { academyStudioMedia } from '../data/media.js'
-import { academyOutcomes, academySteps, signaturePrograms } from '../data/content.js'
+import { academyAdditionalFees, academyOutcomes, academyPaymentDetails, academySteps, signaturePrograms } from '../data/content.js'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
 
@@ -27,8 +27,8 @@ export default function Academy() {
           <p className="uppercase text-xs tracking-[0.5em] text-gold">Taji Academy</p>
           <h1 className="text-4xl md:text-5xl font-playfair text-ivory">Taji Luxury Events Academy</h1>
           <p className="text-lg text-mist leading-relaxed">
-            Professional, hands-on training in event planning, design, floral artistry, and management. We develop creative talent
-            into confident industry professionals.
+            Professional training for future event professionals, focused on the practical skills needed to excel in the events
+            industry. Early registration is essential for the current intake.
           </p>
           <figure className="rounded-3xl overflow-hidden border border-white/10 bg-white/5">
             <img
@@ -142,7 +142,8 @@ export default function Academy() {
                   <th className="px-6 py-3">Duration</th>
                   <th className="px-6 py-3">Mode</th>
                   <th className="px-6 py-3">Reg. (KES)</th>
-                  <th className="px-6 py-3">Total (KES)</th>
+                  <th className="px-6 py-3">Course Fee</th>
+                  <th className="px-6 py-3">Total With Reg.</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,6 +153,7 @@ export default function Academy() {
                     <td className="px-6 py-4">{course.duration}</td>
                     <td className="px-6 py-4 text-mist/70">{course.mode || '--'}</td>
                     <td className="px-6 py-4">KES {formatKES(course.reg_fee)}</td>
+                    <td className="px-6 py-4">KES {formatKES(course.course_fee)}</td>
                     <td className="px-6 py-4 text-gold font-semibold">KES {formatKES(course.total_fee)}</td>
                   </tr>
                 ))}
@@ -160,7 +162,9 @@ export default function Academy() {
           </div>
           <div className="rounded-3xl border border-gold/30 p-8 bg-gradient-to-r from-gold/10 to-transparent">
             <p className="text-lg font-playfair text-gold">Ready to enroll?</p>
-            <p className="text-sm text-mist mt-2">Applications reviewed weekly. Share your goals and we will curate the right path.</p>
+            <p className="text-sm text-mist mt-2">
+              Secure your spot by completing registration, paying the registration fee, and submitting payment details.
+            </p>
             <div className="mt-6 flex flex-wrap gap-4">
               <a href="#programs" className="px-6 py-3 rounded-full bg-primary text-ivory text-sm uppercase tracking-wide hover:bg-primary/90 transition">
                 Browse Courses
@@ -172,6 +176,64 @@ export default function Academy() {
                 Register Now
               </a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-3 sm:px-4 lg:px-6 pb-16" data-aos="fade-up">
+        <div className="max-w-5xl mx-auto grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border border-white/10 p-6 bg-white/5">
+            <p className="text-sm uppercase tracking-[0.4em] text-gold">Additional Fees</p>
+            <div className="mt-5 space-y-4">
+              {academyAdditionalFees.map((fee) => (
+                <div key={fee.label} className="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-ivory">{fee.label}</p>
+                    <p className="text-gold font-semibold">
+                      KES {formatKES(fee.amount)} <span className="text-mist/60">(${fee.usd})</span>
+                    </p>
+                  </div>
+                  {fee.note ? <p className="mt-1 text-xs text-mist/60">{fee.note}</p> : null}
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 text-sm text-mist">
+              All students receive a professional certificate from Taji Luxury Events Academy upon successful completion.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 p-6 bg-white/5">
+            <p className="text-sm uppercase tracking-[0.4em] text-gold">Payment Options</p>
+            <div className="mt-5 space-y-4 text-sm text-mist">
+              <p>Full payment: full amount cleared before the beginning of classes.</p>
+              <p>Two installments: first installment before classes begin, second installment during the class period.</p>
+            </div>
+            <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <dt className="text-mist/60">Paybill</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.paybill}</dd>
+              </div>
+              <div>
+                <dt className="text-mist/60">Account Number</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.accountNumber}</dd>
+              </div>
+              <div>
+                <dt className="text-mist/60">Account Name</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.accountName}</dd>
+              </div>
+              <div>
+                <dt className="text-mist/60">Bank</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.bank}</dd>
+              </div>
+              <div>
+                <dt className="text-mist/60">Branch</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.branch}</dd>
+              </div>
+              <div>
+                <dt className="text-mist/60">SWIFT</dt>
+                <dd className="text-ivory font-semibold">{academyPaymentDetails.swift}</dd>
+              </div>
+            </dl>
           </div>
         </div>
       </section>

@@ -70,7 +70,6 @@ export default function Contact() {
 
             {success ? (
               <div className="rounded-3xl border border-gold/40 bg-gold/10 p-8 text-center space-y-4">
-                <div className="text-4xl">and#127757;</div>
                 <p className="text-xl font-playfair text-ivory">Opening WhatsApp...</p>
                 <p className="text-sm text-mist">
                   Your details are pre-filled in WhatsApp. Just hit send and our team will respond within the hour.
@@ -225,7 +224,7 @@ export default function Contact() {
             </div>
             <div className="rounded-3xl border border-white/10 p-6 space-y-3">
               <p className="text-sm uppercase tracking-[0.4em] text-gold/80">Concierge Desk</p>
-              <p className="text-ivory">and#128231; tajiluxuryevents@gmail.com</p>
+              <p className="text-ivory">tajiluxuryevents@gmail.com</p>
               <a
                 href="https://wa.me/254742574329?text=Hello%20Taji%20team"
                 target="_blank"
@@ -235,7 +234,7 @@ export default function Contact() {
                 <img src="/img/whatsapp.svg" alt="WhatsApp" className="w-5 h-5 flex-shrink-0" />
                 +254 742 574 329
               </a>
-              <p className="text-sm text-mist">Office: Nairobi, Kenya</p>
+              <p className="text-sm text-mist">Apple Wood Adams, Kilimani, Ngong Road, Nairobi</p>
               <p className="text-xs text-mist/60 mt-2">WhatsApp response within 15 minutes during business hours.</p>
             </div>
             <div className="rounded-3xl border border-white/10 p-6">

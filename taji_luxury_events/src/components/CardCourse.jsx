@@ -42,7 +42,8 @@ export default function CardCourse({ course }) {
           <div className="flex items-center justify-between text-xs uppercase tracking-wide text-mist">
             <span>Reg: KES {formatKES(course.reg_fee)}</span>
             <span>
-              Total: <span className="text-gold font-semibold">KES {formatKES(course.total_fee)}</span>
+              Fee: <span className="text-gold font-semibold">KES {formatKES(course.course_fee)}</span>
+              {course.course_fee_usd ? <span className="text-mist/60"> (${course.course_fee_usd})</span> : null}
             </span>
           </div>
           <ul className="text-sm text-ivory/90 grid grid-cols-2 gap-1">

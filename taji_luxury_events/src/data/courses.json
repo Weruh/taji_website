@@ -5,25 +5,27 @@
     "level": "Beginner",
     "duration": "1 Month",
     "mode": "Online",
-    "schedule": "Mon and Tue — Morning 10:30AM–11:30AM or Evening 7:30PM–8:30PM",
-    "summary": "Master event planning, coordination, budgeting, vendor management, and client handling to excel in the events industry.",
+    "schedule": "Mon and Tue: Morning 10:30AM-11:30AM or Evening 7:30PM-8:30PM",
+    "summary": "Learn event planning, coordination, execution, budgeting, vendor sourcing, client management, contracts, and business growth for the events industry.",
     "outcomes": [
       "Event planning, coordination and execution",
       "Event budgeting, costing and quotations",
       "Vendor sourcing and negotiations",
       "Client profiling and client management",
       "Contracts and legal considerations",
-      "Marketing and branding for growth"
+      "Event rental business and business models",
+      "Marketing and branding for business growth"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/management.webp",
     "reg_fee": 2000,
-    "course_fee": 30000,
-    "total_fee": 32000,
+    "course_fee": 36500,
+    "course_fee_usd": 285,
+    "total_fee": 38500,
     "details": [
-      "Ideal for anyone wanting to start an events business or manage social events professionally.",
-      "Covers event rental business models, contracts, and marketing strategies.",
-      "Mon and Tue: Morning 10:30–11:30AM or Evening 7:30–8:30PM."
+      "Ideal for anyone who wants to start an events business, work in event companies, or manage social events professionally.",
+      "Classes run online on Mon and Tue.",
+      "Choose either the morning or evening class."
     ]
   },
   {
@@ -32,52 +34,55 @@
     "level": "All Levels",
     "duration": "1 Month",
     "mode": "Hybrid",
-    "schedule": "Thur and Fri — Morning 10:30AM–12:00PM or Evening 7:00PM–9:00PM | Sat — 11:00AM–1:00PM",
-    "summary": "Master décor engineering, table styling, lighting, and floral installations to build a high-end event decor business.",
+    "schedule": "Thur and Fri: Morning 10:30AM-12:00PM or Evening 7:00PM-9:00PM | Sat: 11:00AM-1:00PM",
+    "summary": "Build the skills needed to start a decor business or work in high-end event setups, from decor engineering to luxury table styling.",
     "outcomes": [
-      "Décor engineering and structural balance",
+      "Decor engineering and structural balance",
       "Design development and styling techniques",
       "Table styling and luxury setups",
       "Lighting design for events",
-      "Event installations and décor structures",
-      "Venue transformation techniques"
+      "Event installations and decor structures",
+      "Venue transformation techniques",
+      "Professional decor setup and styling"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/design.webp",
     "reg_fee": 2000,
-    "course_fee": 53000,
-    "total_fee": 55000,
+    "course_fee": 59500,
+    "course_fee_usd": 465,
+    "total_fee": 61500,
     "details": [
-      "Equips you with the skills to start a decor business or work in high-end event setups.",
-      "Thur and Fri: Morning 10:30AM–12:00PM or Evening 7:00PM–9:00PM.",
-      "Saturday: Morning 11:00AM–1:00PM."
+      "Equips you with practical skills for high-end event decor and styling.",
+      "Thur and Fri classes have morning and evening options.",
+      "Saturday class runs from 11:00AM-1:00PM."
     ]
   },
   {
     "slug": "floral-design",
     "title": "Floral Design",
     "level": "Intermediate",
-    "duration": "1–2 Months",
+    "duration": "1-2 Months",
     "mode": "Physical",
-    "schedule": "Weekday (Mon and Tue 11AM–1PM) or Weekend (Sat 11AM–1PM)",
-    "summary": "Master bridal bouquets, centerpieces, floral installations, and event floral styling for weddings and luxury celebrations.",
+    "schedule": "Weekday: Mon and Tue 11:00AM-1:00PM for 1 month | Weekend: Sat 11:00AM-1:00PM for 2 months",
+    "summary": "Prepare to offer professional floral services for weddings, corporate events, and luxury celebrations.",
     "outcomes": [
-      "Bridal bouquets and centerpieces",
-      "Floral installations and mechanics",
+      "Bridal bouquets",
+      "Centerpieces",
+      "Floral installations",
+      "Floral mechanics and professional techniques",
       "Event floral styling",
-      "Floral business pricing and sourcing",
-      "Color stories and palette development",
-      "Large-scale installation techniques"
+      "Floral business pricing and sourcing"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/flower.webp",
     "reg_fee": 2000,
-    "course_fee": 78000,
-    "total_fee": 80000,
+    "course_fee": 80000,
+    "course_fee_usd": 645,
+    "total_fee": 82000,
     "details": [
-      "Prepares you to offer professional floral services for weddings, corporate events, and luxury celebrations.",
-      "Weekday class: Mon and Tue 11:00AM–1:00PM (1 Month).",
-      "Weekend class: Saturday 11:00AM–1:00PM (2 Months). Same fee applies."
+      "Master floral artistry for exclusive events.",
+      "Weekday option: Mon and Tue, 11:00AM-1:00PM, 1 month.",
+      "Weekend option: Saturday, 11:00AM-1:00PM, 2 months."
     ]
   },
   {
@@ -99,8 +104,8 @@
     "course_fee": 65000,
     "total_fee": 67000,
     "details": [
+      "Training materials fee applies to Balloon Design students.",
       "Structural engineering for large-scale balloon forms and backdrops.",
-      "Palette blending and lighting effects for night-time shows.",
       "Client briefing kits with install blueprints."
     ]
   },
@@ -110,79 +115,88 @@
     "level": "Professional",
     "duration": "1 Month",
     "mode": "Online",
-    "schedule": "Mon and Thur — Morning 7:30AM–8:30AM or Evening 7:30PM–8:30PM",
-    "summary": "Plan, manage, and execute profitable corporate events including conferences, product launches, brand activations, and gala dinners.",
+    "schedule": "Thur and Fri: Morning 7:30AM-8:30AM or Evening 7:30PM-8:30PM",
+    "summary": "Plan, manage, and execute profitable corporate events including conferences, product launches, brand activations, award ceremonies, summits, and corporate dinners.",
     "outcomes": [
-      "Corporate events and business objectives",
+      "Understanding corporate events and business objectives",
       "Types of corporate events",
-      "Corporate event budgeting and ROI",
+      "Corporate client decision structures",
+      "Corporate event budgeting and ROI measurement",
       "Corporate event production",
-      "Professional on-site coordination",
-      "Stakeholder and client management"
+      "Professional on-site event coordination"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/corparate.webp",
     "reg_fee": 2000,
-    "course_fee": 68000,
-    "total_fee": 70000,
+    "course_fee": 70000,
+    "course_fee_usd": 565,
+    "total_fee": 72000,
     "details": [
-      "Corporate events are among the most profitable sectors — conferences, product launches, brand activations, and gala dinners.",
-      "Mon and Thur: Morning 7:30–8:30AM or Evening 7:30–8:30PM.",
-      "Learn to plan and execute events with measurable ROI."
+      "Corporate events are among the most profitable and structured sectors of the events industry.",
+      "Learn to plan, manage, and execute corporate events successfully.",
+      "Morning and evening class options are available."
     ]
   },
   {
     "slug": "interior-design-a",
-    "title": "Interior Design — Level A",
+    "title": "Interior Design A",
     "level": "Beginner",
     "duration": "1 Month",
     "mode": "Online",
-    "schedule": "Mon, Tue and Wed — Evening 7:30PM–9:00PM",
-    "summary": "Build a foundation in interior design covering colour theory, materials, space planning, and professional practice for residential and commercial spaces.",
+    "schedule": "Mon, Tue and Wed: Evening 7:30PM-9:00PM",
+    "summary": "Build a foundation in interior design for students who want to own an interior design company or work as interior designers.",
     "outcomes": [
-      "Designer vs decorator fundamentals",
+      "Designer vs decorator",
       "Materials and specifications",
-      "Colour theory and texture",
+      "Color theory",
+      "Texture in interior design",
       "Fundamentals of interior design",
+      "Professionalism in interior design",
+      "International codes for interior designers",
       "Residential interior design",
-      "Commercial space design"
+      "Commercial space interior design"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/graduation.webp",
     "reg_fee": 2000,
-    "course_fee": 45000,
-    "total_fee": 47000,
+    "course_fee": 47000,
+    "course_fee_usd": 370,
+    "total_fee": 49000,
     "details": [
       "Best for students who wish to own an interior design company or work as designers in the modern market.",
-      "Covers international codes for interior designers.",
-      "Mon, Tue and Wed Evenings: 7:30PM–9:00PM."
+      "Covers residential and commercial design foundations.",
+      "Evening classes run Mon, Tue, and Wed."
     ]
   },
   {
     "slug": "interior-design-b",
-    "title": "Interior Design — Level B",
+    "title": "Interior Design B",
     "level": "Advanced",
     "duration": "2 Months",
     "mode": "Online",
-    "schedule": "Mon, Tue and Wed — Evening 7:30PM–9:00PM",
-    "summary": "Advanced interior design programme covering professional practice, international standards, and complex residential and commercial projects.",
+    "schedule": "Mon, Tue and Wed: Evening 7:30PM-9:00PM",
+    "summary": "A two-month interior design programme for students building deeper professional capability across residential and commercial spaces.",
     "outcomes": [
-      "Advanced design development",
-      "Professional materials and specifications",
-      "International design standards",
-      "Complex residential projects",
-      "Commercial space interior design",
-      "Professionalism in interior practice"
+      "Designer vs decorator",
+      "Materials and specifications",
+      "Color theory",
+      "Texture in interior design",
+      "Fundamentals of interior design",
+      "Professionalism in interior design",
+      "International codes for interior designers",
+      "Residential interior design",
+      "Commercial space interior design"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/Academy.webp",
     "reg_fee": 2000,
-    "course_fee": 103000,
-    "total_fee": 105000,
+    "course_fee": 105000,
+    "course_fee_usd": 835,
+    "total_fee": 107000,
     "details": [
-      "Comprehensive programme for students targeting senior interior design roles.",
-      "Covers residential and commercial space design with international codes.",
-      "Mon, Tue and Wed Evenings: 7:30PM–9:00PM."
+      "Advanced option for students targeting professional interior design practice.",
+      "Covers residential and commercial spaces with professional standards.",
+      "Evening classes run Mon, Tue, and Wed."
     ]
   }
 ]

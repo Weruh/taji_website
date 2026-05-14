@@ -102,13 +102,20 @@ export default function CourseDetail() {
                   </div>
                   <div className="flex justify-between">
                     <dt>Course fee</dt>
-                    <dd className="font-semibold">KES {formatKES(course.course_fee)}</dd>
+                    <dd className="font-semibold">
+                      KES {formatKES(course.course_fee)}
+                      {course.course_fee_usd ? <span className="text-mist/60"> (${course.course_fee_usd})</span> : null}
+                    </dd>
                   </div>
                   <div className="flex justify-between text-lg font-playfair text-gold">
-                    <dt>Total</dt>
+                    <dt>Total with reg.</dt>
                     <dd>KES {formatKES(course.total_fee)}</dd>
                   </div>
                 </dl>
+                <p className="mt-4 text-xs text-mist/60">
+                  Vendor visit, training materials, exam, and graduation fees may apply separately according to the academy fee
+                  schedule.
+                </p>
               </div>
             </div>
             <aside className="space-y-4 self-start sticky top-24">
@@ -117,7 +124,7 @@ export default function CourseDetail() {
                   <p className="text-xs uppercase tracking-[0.4em] text-gold/70">Enrol Now</p>
                   <p className="text-2xl font-playfair text-gold mt-1">{course.title}</p>
                   <p className="text-xs text-mist/70 mt-1">
-                    KES {formatKES(course.total_fee)} total &bull; Reg. KES 2,000
+                    KES {formatKES(course.course_fee)} course fee &bull; Reg. KES 2,000
                   </p>
                 </div>
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-3">

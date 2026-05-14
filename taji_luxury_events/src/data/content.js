@@ -30,25 +30,41 @@ export const heroPoints = [
 
 export const signaturePrograms = [
   'Event management',
-  'Wedding planning and Decor',
-  'Decor and Styling',
+  'Wedding Decor and Styling',
   'Floral Design',
   'Balloon Design',
   'Corporate Event Management',
+  'Interior Design',
 ]
 
 export const academySteps = [
-  { title: 'Learn', copy: 'Live demonstrations, studio practice, and structured curriculum.' },
-  { title: 'Create', copy: 'Design labs and real briefs to build confidence and portfolios.' },
-  { title: 'Elevate', copy: 'Mentorship, business coaching, and graduation showcases.' },
+  { title: 'Register', copy: 'Fill the student registration form and pay the KES 2,000 registration fee.' },
+  { title: 'Choose', copy: 'Select your course, preferred class time, and payment option.' },
+  { title: 'Confirm', copy: 'Submit payment details so the academy can secure your spot.' },
 ]
 
 export const academyOutcomes = [
-  'Portfolio-ready projects',
-  'Vendor network access',
-  'Business blueprints',
-  'Onsite practicum',
+  'Professional certificate',
+  'Business pricing skills',
+  'Vendor sourcing skills',
+  'Client management skills',
 ]
+
+export const academyAdditionalFees = [
+  { label: 'Registration', amount: 2000, usd: 16 },
+  { label: 'Vendor visit', amount: 5000, usd: 40 },
+  { label: 'Training materials', amount: 7000, usd: 55, note: 'Wedding Decor, Floral Design, and Balloon Design students only' },
+  { label: 'Exam and graduation', amount: 10500, usd: 82 },
+]
+
+export const academyPaymentDetails = {
+  paybill: '522522',
+  accountNumber: '1334778795',
+  accountName: 'Taji Luxury Events',
+  bank: 'KCB',
+  branch: 'Thika Road Mall (TRM)',
+  swift: 'KCBLKENX',
+}
 
 export const aboutValues = [
   { title: 'Precision', copy: 'Obsessive logistics and calm, confident delivery.' },

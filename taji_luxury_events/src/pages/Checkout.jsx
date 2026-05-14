@@ -40,6 +40,14 @@ export default function Checkout() {
       return
     }
 
+    const email = document.getElementById('email').value.trim()
+    const name = document.getElementById('name').value.trim()
+
+    if (!name || !email) {
+      setErrors(['Please fill in your name and email before paying.'])
+      return
+    }
+
     setErrors([])
     setStatusMessage('')
     setIsSubmitting(true)
@@ -50,22 +58,42 @@ export default function Checkout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: amountKES,
-          email: document.getElementById('email').value.trim(),
-          name: document.getElementById('name').value.trim(),
+          email,
+          name,
           courseTitle: course.title,
         }),
       })
 
-      const data = await response.json()
+      const bodyText = await response.text()
+      let data = {}
+
+      try {
+        data = bodyText ? JSON.parse(bodyText) : {}
+      } catch {
+        data = { message: bodyText }
+      }
+
+      if (!response.ok) {
+        setErrors([data.message || `Payment gateway unavailable. API returned ${response.status}.`])
+        setIsSubmitting(false)
+        return
+      }
 
       if (!data.status) {
         setErrors([data.message || 'Failed to initialize payment'])
+        setIsSubmitting(false)
+        return
+      }
+
+      if (!window.PaystackPop?.setup) {
+        setErrors(['Paystack checkout script is not loaded. Please refresh and try again.'])
+        setIsSubmitting(false)
         return
       }
 
       const handler = window.PaystackPop.setup({
         key: paystackPublicKey,
-        email: document.getElementById('email').value.trim(),
+        email,
         amount: amountKES * 100,
         currency: 'KES',
         ref: data.reference,
@@ -92,9 +120,8 @@ export default function Checkout() {
 
     } catch (error) {
       console.error(error)
-      setErrors(['Unable to connect to payment gateway'])
-    } finally {
-      // setIsSubmitting(false) removed because we redirect on success
+      setErrors([`Unable to connect to payment gateway at ${apiBase}. Please try again shortly or contact Taji directly.`])
+      setIsSubmitting(false)
     }
   }
 
@@ -161,7 +188,7 @@ export default function Checkout() {
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
                     <div className="font-semibold">Pay in full</div>
-                    <div className="text-xs text-mist/70">KES {formatKES(course.total_fee)}</div>
+                    <div className="text-xs text-mist/70">Course fee plus registration: KES {formatKES(course.total_fee)}</div>
                   </div>
                   <input
                     type="radio"
@@ -173,8 +200,8 @@ export default function Checkout() {
 
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
-                    <div className="font-semibold">50% deposit</div>
-                    <div className="text-xs text-mist/70">KES {formatKES(Math.ceil(course.total_fee / 2))}</div>
+                    <div className="font-semibold">Two installments</div>
+                    <div className="text-xs text-mist/70">First installment: KES {formatKES(Math.ceil(course.total_fee / 2))}</div>
                   </div>
                   <input
                     type="radio"
@@ -184,6 +211,9 @@ export default function Checkout() {
                   />
                 </label>
               </fieldset>
+              <p className="text-xs text-mist/60">
+                For two installments, the first payment is due before classes begin and the second during the class period.
+              </p>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block text-sm text-ivory/80">
