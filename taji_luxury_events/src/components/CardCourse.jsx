@@ -1,16 +1,24 @@
 import { Link } from 'react-router-dom'
-import LazyBackground from './LazyBackground.jsx'
 import { normalizePath } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
 
-export default function CardCourse({ course }) {
+export default function CardCourse({ course, priority = false }) {
+  const image = normalizePath(course.image)
+
   return (
     <article className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:-translate-y-1 transition flex h-full flex-col" data-aos="fade-up">
-      <LazyBackground
-        className="h-48 bg-cover bg-center"
-        src={normalizePath(course.image)}
-        alt={`${course.title} visual`}
-      />
+      <div className="h-48 bg-white/5 overflow-hidden">
+        <img
+          src={image}
+          alt={`${course.title} visual`}
+          className="h-full w-full object-cover"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+          decoding={priority ? 'sync' : 'async'}
+          width="640"
+          height="360"
+        />
+      </div>
       <div className="p-6 flex flex-1 flex-col gap-4">
         <div className="flex items-center justify-between text-xs uppercase tracking-wide flex-wrap gap-2">
           <span className="px-3 py-1 rounded-full bg-gold/20 text-gold">{course.level}</span>

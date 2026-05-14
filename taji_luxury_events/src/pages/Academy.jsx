@@ -104,8 +104,8 @@ export default function Academy() {
             </div>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {filteredCourses.map((course) => (
-              <CardCourse key={course.slug} course={course} />
+            {filteredCourses.map((course, index) => (
+              <CardCourse key={course.slug} course={course} priority={index < 3} />
             ))}
           </div>
         </div>

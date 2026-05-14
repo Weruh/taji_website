@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: tajiluxuryevents-api
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PAYSTACK_SECRET_KEY
+        sync: false
+      - key: PAYSTACK_CALLBACK_URL
+        value: https://www.tajiluxuryevents.com/success
+      - key: CLIENT_ORIGIN
+        value: https://www.tajiluxuryevents.com,https://tajiluxuryevents.com

@@ -15,6 +15,7 @@ const Privacy = lazy(() => import('./pages/Privacy.jsx'))
 const Terms = lazy(() => import('./pages/Terms.jsx'))
 const CourseDetail = lazy(() => import('./pages/CourseDetail.jsx'))
 const Checkout = lazy(() => import('./pages/Checkout.jsx'))
+const Success = lazy(() => import('./pages/Success.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 
 const resolveStoredTheme = () => {
@@ -95,6 +96,7 @@ export default function App() {
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
           <Route path="checkout/:courseSlug" element={<Checkout />} />
+          <Route path="success" element={<Success />} />
           <Route path=":courseSlug" element={<CourseDetail />} />
           <Route path="*" element={<NotFound />} />
         </Route>

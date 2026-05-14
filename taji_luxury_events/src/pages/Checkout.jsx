@@ -85,23 +85,15 @@ export default function Checkout() {
         return
       }
 
-      if (!window.PaystackPop?.setup) {
+      if (!window.PaystackPop) {
         setErrors(['Paystack checkout script is not loaded. Please refresh and try again.'])
         setIsSubmitting(false)
         return
       }
 
-      const handler = window.PaystackPop.setup({
-        key: paystackPublicKey,
-        email,
-        amount: amountKES * 100,
-        currency: 'KES',
-        ref: data.reference,
-        access_code: data.access_code,
-        channels: ['mobile_money', 'card'],
-
+      const callbacks = {
         onSuccess: (transaction) => {
-          window.location.href = `/success?reference=${transaction.reference}`
+          window.location.href = `/success?reference=${transaction.reference || data.reference}`
         },
 
         onCancel: () => {
@@ -113,10 +105,53 @@ export default function Checkout() {
           console.error(error)
           setErrors(['Payment error occurred. Please try again.'])
           setIsSubmitting(false)
-        }
-      })
+        },
+      }
 
-      handler.openIframe()
+      if (typeof window.PaystackPop === 'function') {
+        const popup = new window.PaystackPop()
+
+        if (typeof popup.resumeTransaction === 'function' && data.access_code) {
+          popup.resumeTransaction(data.access_code, callbacks)
+          return
+        }
+
+        if (typeof popup.newTransaction === 'function') {
+          popup.newTransaction({
+            key: paystackPublicKey,
+            email,
+            amount: amountKES * 100,
+            currency: 'KES',
+            reference: data.reference,
+            channels: ['mobile_money', 'card'],
+            metadata: {
+              customer_name: name,
+              course: course.title,
+            },
+            ...callbacks,
+          })
+          return
+        }
+      }
+
+      if (typeof window.PaystackPop.setup === 'function') {
+        const handler = window.PaystackPop.setup({
+          key: paystackPublicKey,
+          email,
+          amount: amountKES * 100,
+          currency: 'KES',
+          ref: data.reference,
+          access_code: data.access_code,
+          channels: ['mobile_money', 'card'],
+          callback: callbacks.onSuccess,
+          onClose: callbacks.onCancel,
+        })
+        handler.openIframe()
+        return
+      }
+
+      setErrors(['This browser could not start Paystack checkout. Please refresh and try again.'])
+      setIsSubmitting(false)
 
     } catch (error) {
       console.error(error)
