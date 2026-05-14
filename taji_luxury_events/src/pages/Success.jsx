@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
+import { API_BASE_URL } from '../config/payments.js'
 
 export default function Success() {
   const [searchParams] = useSearchParams()
@@ -9,8 +10,6 @@ export default function Success() {
   const [isVerifying, setIsVerifying] = useState(true)
   const [verified, setVerified] = useState(false)
   const [error, setError] = useState('')
-
-  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://taji-website.onrender.com'
 
   // Optional: Verify payment with backend
   useEffect(() => {
@@ -22,7 +21,7 @@ export default function Success() {
 
     const verifyPayment = async () => {
       try {
-        const res = await fetch(`${apiBase}/api/paystack/verify/${reference}`)
+        const res = await fetch(`${API_BASE_URL}/api/paystack/verify/${reference}`)
         const data = await res.json()
 
         if (data.status === true && data.data?.status === 'success') {

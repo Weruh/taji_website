@@ -4,6 +4,7 @@ import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import coursesData from '../data/courses.json'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
+import { API_BASE_URL, PAYSTACK_PUBLIC_KEY } from '../config/payments.js'
 
 const courses = normalizeMediaList(coursesData, ['image'])
 
@@ -15,9 +16,6 @@ export default function Checkout() {
   const [errors, setErrors] = useState([])
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://taji-website.onrender.com'
-  const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
 
   if (!course) {
     return (
@@ -35,7 +33,7 @@ export default function Checkout() {
     : course.total_fee || 0
 
   const handlePaystackPayment = async () => {
-    if (!paystackPublicKey) {
+    if (!PAYSTACK_PUBLIC_KEY) {
       setErrors(['Paystack public key is missing'])
       return
     }
@@ -53,7 +51,7 @@ export default function Checkout() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch(`${apiBase}/api/paystack/initialize`, {
+      const response = await fetch(`${API_BASE_URL}/api/paystack/initialize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -118,7 +116,7 @@ export default function Checkout() {
 
         if (typeof popup.newTransaction === 'function') {
           popup.newTransaction({
-            key: paystackPublicKey,
+            key: PAYSTACK_PUBLIC_KEY,
             email,
             amount: amountKES * 100,
             currency: 'KES',
@@ -136,7 +134,7 @@ export default function Checkout() {
 
       if (typeof window.PaystackPop.setup === 'function') {
         const handler = window.PaystackPop.setup({
-          key: paystackPublicKey,
+          key: PAYSTACK_PUBLIC_KEY,
           email,
           amount: amountKES * 100,
           currency: 'KES',
@@ -155,7 +153,7 @@ export default function Checkout() {
 
     } catch (error) {
       console.error(error)
-      setErrors([`Unable to connect to payment gateway at ${apiBase}. Please try again shortly or contact Taji directly.`])
+      setErrors([`Unable to connect to payment gateway at ${API_BASE_URL}. Please try again shortly or contact Taji directly.`])
       setIsSubmitting(false)
     }
   }
