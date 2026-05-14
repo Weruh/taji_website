@@ -16,7 +16,7 @@ export default function Checkout() {
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://tajiluxuryevents.onrender.com'
+  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://taji-website.onrender.com'
   const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY
 
   if (!course) {

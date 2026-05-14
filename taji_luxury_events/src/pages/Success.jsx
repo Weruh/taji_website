@@ -10,7 +10,7 @@ export default function Success() {
   const [verified, setVerified] = useState(false)
   const [error, setError] = useState('')
 
-  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://tajiluxuryevents.onrender.com'
+  const apiBase = import.meta.env.VITE_API_BASE?.trim() || 'https://taji-website.onrender.com'
 
   // Optional: Verify payment with backend
   useEffect(() => {
