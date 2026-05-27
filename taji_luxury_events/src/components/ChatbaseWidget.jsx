@@ -2,9 +2,13 @@ import { useEffect } from 'react';
 
 const ChatbaseWidget = () => {
   useEffect(() => {
-    const chatbaseId = import.meta.env.VITE_CHATBASE_ID;
+    const envId = import.meta.env.VITE_CHATBASE_ID;
+    const globalId = typeof window !== 'undefined' && (window.__CHATBASE_ID__ || window.__CHATBASE_ID);
+    const meta = typeof document !== 'undefined' && document.querySelector('meta[name="chatbase-id"]');
+    const chatbaseId = envId || globalId || (meta && meta.getAttribute('content'));
+
     if (!chatbaseId) {
-      console.warn('[ChatbaseWidget] Missing VITE_CHATBASE_ID. Chat widget will not load.');
+      console.warn('[ChatbaseWidget] Missing chatbase ID (VITE_CHATBASE_ID / window.__CHATBASE_ID__ / meta[name="chatbase-id"]). Chat widget will not load.');
       return;
     }
 
