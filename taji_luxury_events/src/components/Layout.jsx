@@ -5,6 +5,7 @@ import Footer from './Footer.jsx'
 import PlanningModal from './PlanningModal.jsx'
 import BackToTop from './BackToTop.jsx'
 import WhatsAppFloat from './WhatsAppFloat.jsx'
+import ChatbaseWidget from './ChatbaseWidget.jsx';
 
 export default function Layout() {
   return (
@@ -23,7 +24,7 @@ export default function Layout() {
       </main>
       <PlanningModal />
       <Footer />
-      <BackToTop />
+      <ChatbaseWidget />
       <WhatsAppFloat />
     </div>
   )
