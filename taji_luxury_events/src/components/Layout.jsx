@@ -25,7 +25,7 @@ export default function Layout() {
       <PlanningModal />
       <Footer />
       <ChatbaseWidget />
-      <WhatsAppFloat />
+      
     </div>
   )
 }
