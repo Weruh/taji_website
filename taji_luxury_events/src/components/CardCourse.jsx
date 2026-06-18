@@ -1,9 +1,16 @@
 import { Link } from 'react-router-dom'
+import { academyAdditionalFees } from '../data/content.js'
 import { normalizePath } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
 
-export default function CardCourse({ course, priority = false }) {
+export default function CardCourse({ course, priority = false, showAdditionalFees = false }) {
   const image = normalizePath(course.image)
+  const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
+  const separateFeesUSD = academyAdditionalFees.reduce((total, fee) => total + Number(fee.usd || 0), 0)
+  const isEstimatedCourseFeeUSD = !course.course_fee_usd
+  const schoolFeeUSD = course.course_fee_usd || Math.round(Number(course.course_fee || 0) / 125)
+  const totalPayableKES = Number(course.course_fee || 0) + separateFeesKES
+  const totalPayableUSD = schoolFeeUSD + separateFeesUSD
 
   return (
     <article className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:-translate-y-1 transition flex h-full flex-col" data-aos="fade-up">
@@ -47,10 +54,64 @@ export default function CardCourse({ course, priority = false }) {
               </ul>
             </div>
           ) : null}
-          <div className="flex items-center justify-between text-xs uppercase tracking-wide text-mist">
-            <span>Reg: KES {formatKES(course.reg_fee)}</span>
+          {showAdditionalFees ? (
+            <div className="rounded-2xl border border-gold/20 bg-gold/10 p-4 text-sm">
+              <p className="text-xs uppercase tracking-[0.35em] text-gold/80">Separate Fees</p>
+              <p className="mt-2 text-xs leading-relaxed text-mist/70">
+                These fees are not included in the school fees. They are paid separately.
+              </p>
+              <div className="mt-4 space-y-3">
+                {academyAdditionalFees.map((fee, index) => (
+                  <div key={`${course.slug}-${fee.label}`} className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                    <p className="font-semibold text-ivory">
+                      {index + 1}. {fee.label} - ${fee.usd}{' '}
+                      <span className="text-gold/80">(KES {formatKES(fee.amount)})</span>
+                    </p>
+                    {fee.note ? <p className="mt-1 text-xs leading-relaxed text-mist/70">{fee.note}</p> : null}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-xl border border-gold/20 bg-charcoal/60 p-3">
+                <div className="flex items-start justify-between gap-3 text-xs text-mist/70">
+                  <span>School fee</span>
+                  <span className="text-right text-ivory">
+                    KES {formatKES(course.course_fee)}
+                    <span className="text-mist/60">
+                      {' '}
+                      / {isEstimatedCourseFeeUSD ? 'approx. ' : ''}${schoolFeeUSD}
+                    </span>
+                  </span>
+                </div>
+                <div className="mt-2 flex items-start justify-between gap-3 text-xs text-mist/70">
+                  <span>Separate fees</span>
+                  <span className="text-right text-ivory">
+                    KES {formatKES(separateFeesKES)} <span className="text-mist/60">/ ${separateFeesUSD}</span>
+                  </span>
+                </div>
+                <div className="mt-3 border-t border-white/10 pt-3">
+                  <p className="text-xs uppercase tracking-[0.25em] text-gold/70">Subtotal to Pay</p>
+                  <p className="mt-1 text-lg font-playfair text-gold">
+                    KES {formatKES(totalPayableKES)}{' '}
+                    <span className="text-sm text-mist/70">
+                      / {isEstimatedCourseFeeUSD ? 'approx. ' : ''}${totalPayableUSD}
+                    </span>
+                  </p>
+                </div>
+                <a
+                  href="https://paystack.shop/taji-luxury-events-academy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-wide text-ivory hover:bg-primary/90 transition"
+                >
+                  Pay 
+                </a>
+              </div>
+            </div>
+          ) : null}
+          <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-wide text-mist">
+            <span>School Fee</span>
             <span>
-              Fee: <span className="text-gold font-semibold">KES {formatKES(course.course_fee)}</span>
+              <span className="text-gold font-semibold">KES {formatKES(course.course_fee)}</span>
               {course.course_fee_usd ? <span className="text-mist/60"> (${course.course_fee_usd})</span> : null}
             </span>
           </div>

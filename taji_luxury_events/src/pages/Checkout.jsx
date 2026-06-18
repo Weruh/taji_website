@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import coursesData from '../data/courses.json'
+import { academyAdditionalFees } from '../data/content.js'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
 import { API_BASE_URL, PAYSTACK_PUBLIC_KEY } from '../config/payments.js'
@@ -28,9 +29,13 @@ export default function Checkout() {
     )
   }
 
-  const amountKES = selectedOption === 'half' 
-    ? Math.ceil((course.total_fee || 0) / 2) 
-    : course.total_fee || 0
+  const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
+  const separateFeesUSD = academyAdditionalFees.reduce((total, fee) => total + Number(fee.usd || 0), 0)
+  const isEstimatedCourseFeeUSD = !course.course_fee_usd
+  const schoolFeeUSD = course.course_fee_usd || Math.round(Number(course.course_fee || 0) / 125)
+  const subtotalKES = Number(course.course_fee || 0) + separateFeesKES
+  const subtotalUSD = schoolFeeUSD + separateFeesUSD
+  const amountKES = selectedOption === 'half' ? Math.ceil(subtotalKES / 2) : subtotalKES
 
   const handlePaystackPayment = async () => {
     if (!PAYSTACK_PUBLIC_KEY) {
@@ -215,13 +220,64 @@ export default function Checkout() {
             )}
 
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <div className="rounded-2xl border border-gold/20 bg-gold/10 p-4">
+                <p className="text-xs uppercase tracking-[0.35em] text-gold/80">Payment Breakdown</p>
+                <p className="mt-2 text-xs leading-relaxed text-mist/70">
+                  The fees below are not included in the school fees. They are paid separately and included in this checkout
+                  subtotal.
+                </p>
+
+                <div className="mt-4 space-y-3 text-sm">
+                  <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-3">
+                    <span className="text-mist">School fee</span>
+                    <span className="text-right font-semibold text-ivory">
+                      KES {formatKES(course.course_fee)}
+                      <span className="text-mist/60">
+                        {' '}
+                        / {isEstimatedCourseFeeUSD ? 'approx. ' : ''}${schoolFeeUSD}
+                      </span>
+                    </span>
+                  </div>
+
+                  {academyAdditionalFees.map((fee, index) => (
+                    <div key={fee.label} className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <span className="font-semibold text-ivory">
+                          {index + 1}. {fee.label} - ${fee.usd}
+                        </span>
+                        <span className="shrink-0 text-right text-gold">KES {formatKES(fee.amount)}</span>
+                      </div>
+                      {fee.note ? <p className="mt-1 text-xs leading-relaxed text-mist/70">{fee.note}</p> : null}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 rounded-xl border border-gold/20 bg-charcoal/60 p-3">
+                  <div className="flex items-start justify-between gap-4 text-xs text-mist/70">
+                    <span>Separate fees subtotal</span>
+                    <span className="text-right text-ivory">
+                      KES {formatKES(separateFeesKES)} <span className="text-mist/60">/ ${separateFeesUSD}</span>
+                    </span>
+                  </div>
+                  <div className="mt-3 border-t border-white/10 pt-3">
+                    <p className="text-xs uppercase tracking-[0.25em] text-gold/70">Subtotal to Pay</p>
+                    <p className="mt-1 text-xl font-playfair text-gold">
+                      KES {formatKES(subtotalKES)}{' '}
+                      <span className="text-sm text-mist/70">
+                        / {isEstimatedCourseFeeUSD ? 'approx. ' : ''}${subtotalUSD}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-2 text-xs uppercase tracking-[0.4em] text-gold/70">Payment option</div>
               
               <fieldset className="space-y-2">
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
                     <div className="font-semibold">Pay in full</div>
-                    <div className="text-xs text-mist/70">Course fee plus registration: KES {formatKES(course.total_fee)}</div>
+                    <div className="text-xs text-mist/70">School fee plus separate fees: KES {formatKES(subtotalKES)}</div>
                   </div>
                   <input
                     type="radio"
@@ -234,7 +290,7 @@ export default function Checkout() {
                 <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                   <div>
                     <div className="font-semibold">Two installments</div>
-                    <div className="text-xs text-mist/70">First installment: KES {formatKES(Math.ceil(course.total_fee / 2))}</div>
+                    <div className="text-xs text-mist/70">First installment: KES {formatKES(Math.ceil(subtotalKES / 2))}</div>
                   </div>
                   <input
                     type="radio"

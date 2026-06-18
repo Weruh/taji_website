@@ -11,6 +11,8 @@ const courses = normalizeMediaList(coursesData, ['image'])
 
 export default function Academy() {
   const [level, setLevel] = useState('All levels')
+  const registrationFee = academyAdditionalFees.find((fee) => fee.label === 'Registration Fee')
+  const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
 
   const levels = useMemo(() => {
     const set = new Set(courses.map((course) => course.level || 'Flexible'))
@@ -78,6 +80,38 @@ export default function Academy() {
 
       <section className="px-3 sm:px-4 lg:px-6 pb-16" id="programs" data-aos="fade-up">
         <div className="max-w-6xl mx-auto space-y-8">
+          <div className="rounded-3xl border border-gold/30 bg-gold/10 p-6 md:p-8 grid gap-6 lg:grid-cols-[1.6fr_1fr] lg:items-center">
+            <div>
+              <p className="uppercase text-xs tracking-[0.5em] text-gold">Current Intake</p>
+              <h2 className="mt-3 text-3xl md:text-4xl font-playfair text-ivory">Courses Currently Open for Registration</h2>
+              <p className="mt-4 text-sm md:text-base text-mist leading-relaxed">
+                Take the next step toward a luxury events career. Choose a course, pay the registration fee, and submit your
+                details so the academy team can reserve your place.
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-charcoal/70 p-5">
+              <p className="text-xs uppercase tracking-[0.35em] text-mist/60">Registration Fee</p>
+              <p className="mt-3 text-3xl font-playfair text-gold">
+                KES {formatKES(registrationFee?.amount || 2000)}
+                {registrationFee?.usd ? <span className="text-base text-mist/60"> (${registrationFee.usd})</span> : null}
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href="https://paystack.shop/taji-luxury-events-academy"
+                  className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
+                >
+                  Register Now
+                </a>
+                <a
+                  href="#registration-fees"
+                  className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
+                >
+                  View Fees
+                </a>
+              </div>
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="uppercase text-xs tracking-[0.5em] text-gold">Academy Programs</p>
@@ -105,7 +139,7 @@ export default function Academy() {
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredCourses.map((course, index) => (
-              <CardCourse key={course.slug} course={course} priority={index < 3} />
+              <CardCourse key={course.slug} course={course} priority={index < 3} showAdditionalFees />
             ))}
           </div>
         </div>
@@ -141,9 +175,9 @@ export default function Academy() {
                   <th className="px-6 py-3">Course</th>
                   <th className="px-6 py-3">Duration</th>
                   <th className="px-6 py-3">Mode</th>
-                  <th className="px-6 py-3">Reg. (KES)</th>
-                  <th className="px-6 py-3">Course Fee</th>
-                  <th className="px-6 py-3">Total With Reg.</th>
+                  <th className="px-6 py-3">School Fee</th>
+                  <th className="px-6 py-3">Separate Fees</th>
+                  <th className="px-6 py-3">Subtotal To Pay</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,9 +186,9 @@ export default function Academy() {
                     <td className="px-6 py-4 font-semibold">{course.title}</td>
                     <td className="px-6 py-4">{course.duration}</td>
                     <td className="px-6 py-4 text-mist/70">{course.mode || '--'}</td>
-                    <td className="px-6 py-4">KES {formatKES(course.reg_fee)}</td>
                     <td className="px-6 py-4">KES {formatKES(course.course_fee)}</td>
-                    <td className="px-6 py-4 text-gold font-semibold">KES {formatKES(course.total_fee)}</td>
+                    <td className="px-6 py-4">KES {formatKES(separateFeesKES)}</td>
+                    <td className="px-6 py-4 text-gold font-semibold">KES {formatKES(Number(course.course_fee || 0) + separateFeesKES)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -163,7 +197,7 @@ export default function Academy() {
           <div className="rounded-3xl border border-gold/30 p-8 bg-gradient-to-r from-gold/10 to-transparent">
             <p className="text-lg font-playfair text-gold">Ready to enroll?</p>
             <p className="text-sm text-mist mt-2">
-              Secure your spot by completing registration, paying the registration fee, and submitting payment details.
+              Secure your spot by paying the school fee and the separate academy fees through the registration prompt.
             </p>
             <div className="mt-6 flex flex-wrap gap-4">
               <a href="#programs" className="px-6 py-3 rounded-full bg-primary text-ivory text-sm uppercase tracking-wide hover:bg-primary/90 transition">
@@ -180,17 +214,17 @@ export default function Academy() {
         </div>
       </section>
 
-      <section className="px-3 sm:px-4 lg:px-6 pb-16" data-aos="fade-up">
+      <section className="px-3 sm:px-4 lg:px-6 pb-16" id="registration-fees" data-aos="fade-up">
         <div className="max-w-5xl mx-auto grid gap-6 lg:grid-cols-2">
           <div className="rounded-3xl border border-white/10 p-6 bg-white/5">
-            <p className="text-sm uppercase tracking-[0.4em] text-gold">Additional Fees</p>
+            <p className="text-sm uppercase tracking-[0.4em] text-gold">Registration & Additional Fees</p>
             <div className="mt-5 space-y-4">
               {academyAdditionalFees.map((fee) => (
                 <div key={fee.label} className="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
                   <div className="flex items-center justify-between gap-4">
                     <p className="text-ivory">{fee.label}</p>
                     <p className="text-gold font-semibold">
-                      KES {formatKES(fee.amount)} <span className="text-mist/60">(${fee.usd})</span>
+                      ${fee.usd} <span className="text-mist/60">/ KES {formatKES(fee.amount)}</span>
                     </p>
                   </div>
                   {fee.note ? <p className="mt-1 text-xs text-mist/60">{fee.note}</p> : null}
@@ -200,6 +234,26 @@ export default function Academy() {
             <p className="mt-5 text-sm text-mist">
               All students receive a professional certificate from Taji Luxury Events Academy upon successful completion.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href="https://paystack.shop/taji-luxury-events-academy"
+                className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
+              >
+                Register Now
+              </a>
+              <a
+                href="#programs"
+                className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
+              >
+                View Courses
+              </a>
+              <a
+                href="https://wa.me/254742574329?text=Hello%20Taji%20Luxury%20Events%20Academy%2C%20I%20would%20like%20to%20enrol%20for%20a%20course."
+                className="px-5 py-3 rounded-full border border-white/10 text-xs uppercase tracking-wide text-mist hover:border-[#25D366] hover:text-[#25D366] transition"
+              >
+                Enrol via WhatsApp
+              </a>
+            </div>
           </div>
 
           <div className="rounded-3xl border border-white/10 p-6 bg-white/5">

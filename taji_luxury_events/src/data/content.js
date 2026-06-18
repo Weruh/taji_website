@@ -51,10 +51,10 @@ export const academyOutcomes = [
 ]
 
 export const academyAdditionalFees = [
-  { label: 'Registration', amount: 2000, usd: 16 },
-  { label: 'Vendor visit', amount: 5000, usd: 40 },
-  { label: 'Training materials', amount: 7000, usd: 55, note: 'Wedding Decor, Floral Design, and Balloon Design students only' },
-  { label: 'Exam and graduation', amount: 10500, usd: 82 },
+  { label: 'Registration Fee', amount: 2000, usd: 16, note: 'One-time enrollment & application processing' },
+  { label: 'Administrative Fee', amount: 7000, usd: 55, note: 'Course coordination, student records & academic support' },
+  { label: 'Learning Resource Fee', amount: 5000, usd: 40, note: 'Course materials, templates, guides & training resources' },
+  { label: 'Examination & Certification Fee', amount: 10500, usd: 82 },
 ]
 
 export const academyPaymentDetails = {
