@@ -41,6 +41,27 @@ export default function About() {
         </div>
       </section>
 
+      <section className="px-3 sm:px-4 lg:px-6 py-16 bg-white/5" data-aos="fade-up">
+        <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
+          <div className="overflow-hidden rounded-3xl border border-gold/20 bg-charcoal/60 shadow-2xl shadow-black/30">
+            <img
+              src="/img/about/awardimage.jpeg"
+              alt="Taji Luxury Events and Academy Afri-Glo Choice Awards certificate and trophy"
+              className="block w-full h-full object-cover"
+            />
+          </div>
+          <div className="space-y-5">
+            <p className="uppercase text-xs tracking-[0.5em] text-gold">Award Winning Academy</p>
+            <h2 className="text-3xl md:text-4xl font-playfair text-ivory">Recognised for Excellence</h2>
+            <p className="text-base md:text-lg text-mist leading-relaxed">
+              Taji Luxury Events and Academy is an award-winning events company and training school, recently recognised at the
+              Afri-Glo Choice Awards as the Event Planning and Management Academy of the Year. The June 13, 2026 award celebrates
+              their impact, professionalism, and commitment to raising the standard of event planning education.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="px-3 sm:px-4 lg:px-6 py-16" data-aos="fade-up">
         <div className="max-w-6xl mx-auto space-y-8">
           <div>

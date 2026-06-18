@@ -2,14 +2,23 @@ import { useEffect, useMemo, useState } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import galleryFallback from '../data/gallery.json'
 import { galleryMedia } from '../data/media.js'
-import { normalizeMediaList } from '../utils/media.js'
+import { normalizeMediaList, normalizePath } from '../utils/media.js'
 
 const fallbackItems = normalizeMediaList(galleryFallback, ['src'])
+const tileLayouts = [
+  'sm:col-span-2 lg:row-span-2',
+  'lg:row-span-2',
+  '',
+  '',
+  'sm:row-span-2',
+  '',
+]
 
 export default function Gallery() {
   const [isOpen, setIsOpen] = useState(false)
   const [activeSrc, setActiveSrc] = useState('')
   const [activeAlt, setActiveAlt] = useState('')
+  const [failedImages, setFailedImages] = useState(() => new Set())
 
   const items = useMemo(() => {
     if (galleryMedia.length) {
@@ -17,12 +26,17 @@ export default function Gallery() {
         .filter((src) => !src.endsWith('.svg'))
         .slice(0, 60)
         .map((src, index) => ({
-        src,
-        alt: `Gallery showcase ${index + 1}`,
-      }))
+          src: normalizePath(src),
+          alt: `Gallery showcase ${index + 1}`,
+        }))
     }
     return fallbackItems
   }, [])
+
+  const visibleItems = useMemo(
+    () => items.filter((media) => !failedImages.has(media.src)),
+    [failedImages, items]
+  )
 
   const open = (src, alt) => {
     setActiveSrc(src)
@@ -60,15 +74,34 @@ export default function Gallery() {
           <h1 className="text-4xl md:text-5xl font-playfair text-ivory mt-2">Gallery</h1>
           <p className="text-mist mt-3 text-sm">A look inside weddings, corporate events, and academy workshops.</p>
         </div>
-        <div className="columns-2 md:columns-3 gap-4 space-y-4">
-          {items.map((media, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 auto-rows-[240px] sm:auto-rows-[260px] lg:auto-rows-[280px] gap-4">
+          {visibleItems.map((media, index) => (
             <button
               key={`${media.src}-${index}`}
               type="button"
-              className="relative group w-full rounded-2xl overflow-hidden break-inside-avoid block mb-4"
+              aria-label={`View ${media.alt}`}
+              className={`relative group h-full min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg shadow-black/20 ${tileLayouts[index % tileLayouts.length]}`}
               onClick={() => open(media.src, media.alt)}
             >
-              <img src={media.src} alt={media.alt} className="w-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+              <span
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                style={{ backgroundImage: `url("${media.src}")` }}
+                aria-hidden="true"
+              />
+              <img
+                src={media.src}
+                alt={media.alt}
+                className="sr-only"
+                decoding="async"
+                fetchPriority={index < 6 ? 'high' : 'auto'}
+                onError={() => {
+                  setFailedImages((current) => {
+                    const next = new Set(current)
+                    next.add(media.src)
+                    return next
+                  })
+                }}
+              />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                 <span className="text-xs uppercase tracking-[0.4em] text-ivory border border-ivory/50 px-4 py-2 rounded-full">View</span>
               </div>
