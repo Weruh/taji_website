@@ -97,14 +97,12 @@ export default function CardCourse({ course, priority = false, showAdditionalFee
                     </span>
                   </p>
                 </div>
-                <a
-                  href="https://paystack.shop/taji-luxury-events-academy"
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  to={`/checkout/${course.slug}`}
                   className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-wide text-ivory hover:bg-primary/90 transition"
                 >
                   Pay 
-                </a>
+                </Link>
               </div>
             </div>
           ) : null}

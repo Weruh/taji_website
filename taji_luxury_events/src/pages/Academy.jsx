@@ -96,12 +96,7 @@ export default function Academy() {
                 {registrationFee?.usd ? <span className="text-base text-mist/60"> (${registrationFee.usd})</span> : null}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <a
-                  href="https://paystack.shop/taji-luxury-events-academy"
-                  className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
-                >
-                  Register Now
-                </a>
+               
                 <a
                   href="#registration-fees"
                   className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
@@ -204,7 +199,7 @@ export default function Academy() {
                 Browse Courses
               </a>
               <a
-                href="https://paystack.shop/taji-luxury-events-academy"
+                href="#programs"
                 className="px-6 py-3 rounded-full border border-gold text-sm uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
               >
                 Register Now
@@ -236,7 +231,7 @@ export default function Academy() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <a
-                href="https://paystack.shop/taji-luxury-events-academy"
+                href="#programs"
                 className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
               >
                 Register Now
