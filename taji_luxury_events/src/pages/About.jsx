@@ -43,11 +43,16 @@ export default function About() {
 
       <section className="px-3 sm:px-4 lg:px-6 py-16 bg-white/5" data-aos="fade-up">
         <div className="max-w-6xl mx-auto grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-center">
-          <div className="overflow-hidden rounded-3xl border border-gold/20 bg-charcoal/60 shadow-2xl shadow-black/30">
+          <div className="aspect-[4/5] overflow-hidden rounded-3xl border border-gold/20 bg-charcoal/60 shadow-2xl shadow-black/30">
             <img
               src="/img/about/awardimage.jpeg"
               alt="Taji Luxury Events and Academy Afri-Glo Choice Awards certificate and trophy"
               className="block w-full h-full object-cover"
+              width="1080"
+              height="1350"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
           <div className="space-y-5">
@@ -82,6 +87,8 @@ export default function About() {
                       src={leader.image}
                       alt={leader.name}
                       className="block w-full h-full object-cover object-center transition-transform duration-700"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                 ) : (
