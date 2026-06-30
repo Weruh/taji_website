@@ -335,7 +335,7 @@ export default function Checkout() {
               >
                 {isSubmitting
                   ? 'Processing...'
-                  : `${isRegistrationPayment ? 'Pay Registration Fee' : 'Pay '} - KES ${formatKES(amountKES)}`}
+                  : `${isRegistrationPayment ? 'Pay Fee' : 'Pay'} - KES ${formatKES(amountKES)}`}
               </button>
             </form>
           </div>
