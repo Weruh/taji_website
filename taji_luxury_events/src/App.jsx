@@ -66,6 +66,12 @@ export default function App() {
   }, [location.pathname])
 
   useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0 })
+    }
+  }, [location.pathname, location.hash])
+
+  useEffect(() => {
     document.documentElement.classList.remove('theme-dark', 'theme-light')
     document.documentElement.classList.add(theme)
     localStorage.setItem('taji-theme', theme)
@@ -95,6 +101,7 @@ export default function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
+          <Route path="academy/courses/:courseSlug" element={<Checkout />} />
           <Route path="checkout/:courseSlug" element={<Checkout />} />
           <Route path="success" element={<Success />} />
           <Route path=":courseSlug" element={<CourseDetail />} />

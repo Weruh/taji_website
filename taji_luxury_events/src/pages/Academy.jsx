@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import CardCourse from '../components/CardCourse.jsx'
 import coursesData from '../data/courses.json'
@@ -11,6 +12,7 @@ const courses = normalizeMediaList(coursesData, ['image'])
 
 export default function Academy() {
   const [level, setLevel] = useState('All levels')
+  const [preferredCourseSlug, setPreferredCourseSlug] = useState(courses[0]?.slug || '')
   const registrationFee = academyAdditionalFees.find((fee) => fee.label === 'Registration Fee')
   const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
 
@@ -20,6 +22,10 @@ export default function Academy() {
   }, [courses])
 
   const filteredCourses = courses.filter((course) => level === 'All levels' || course.level === level)
+  const preferredCourse = courses.find((course) => course.slug === preferredCourseSlug) || courses[0]
+  const registrationCheckoutUrl = preferredCourse
+    ? `/academy/courses/${preferredCourse.slug}?payment=registration#payment`
+    : '#programs'
 
   return (
     <>
@@ -95,14 +101,28 @@ export default function Academy() {
                 KES {formatKES(registrationFee?.amount || 2000)}
                 {registrationFee?.usd ? <span className="text-base text-mist/60"> (${registrationFee.usd})</span> : null}
               </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-               
-                <a
-                  href="#registration-fees"
-                  className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
+              <div className="mt-5 space-y-3">
+                <label className="block text-xs uppercase tracking-[0.3em] text-mist/60" htmlFor="preferred-course">
+                  Preferred course
+                </label>
+                <select
+                  id="preferred-course"
+                  value={preferredCourseSlug}
+                  onChange={(event) => setPreferredCourseSlug(event.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-charcoal px-3 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
                 >
-                  View Fees
-                </a>
+                  {courses.map((course) => (
+                    <option key={course.slug} value={course.slug}>
+                      {course.title}
+                    </option>
+                  ))}
+                </select>
+                <Link
+                  to={registrationCheckoutUrl}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-gold px-5 py-3 text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
+                >
+                  Register Now
+                </Link>
               </div>
             </div>
           </div>
@@ -199,7 +219,7 @@ export default function Academy() {
                 Browse Courses
               </a>
               <a
-                href="#programs"
+                href="#registration-fees"
                 className="px-6 py-3 rounded-full border border-gold text-sm uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
               >
                 Register Now
@@ -229,25 +249,42 @@ export default function Academy() {
             <p className="mt-5 text-sm text-mist">
               All students receive a professional certificate from Taji Luxury Events Academy upon successful completion.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href="#programs"
-                className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
+            <div className="mt-6 space-y-3">
+              <label className="block text-xs uppercase tracking-[0.3em] text-mist/60" htmlFor="registration-course">
+                Preferred course
+              </label>
+              <select
+                id="registration-course"
+                value={preferredCourseSlug}
+                onChange={(event) => setPreferredCourseSlug(event.target.value)}
+                className="w-full rounded-xl border border-white/10 bg-charcoal px-3 py-3 text-sm text-ivory focus:border-gold focus:outline-none"
               >
-                Register Now
-              </a>
-              <a
-                href="#programs"
-                className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
-              >
-                View Courses
-              </a>
-              <a
-                href="https://wa.me/254742574329?text=Hello%20Taji%20Luxury%20Events%20Academy%2C%20I%20would%20like%20to%20enrol%20for%20a%20course."
-                className="px-5 py-3 rounded-full border border-white/10 text-xs uppercase tracking-wide text-mist hover:border-[#25D366] hover:text-[#25D366] transition"
-              >
-                Enrol via WhatsApp
-              </a>
+                {courses.map((course) => (
+                  <option key={course.slug} value={course.slug}>
+                    {course.title}
+                  </option>
+                ))}
+              </select>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to={registrationCheckoutUrl}
+                  className="px-5 py-3 rounded-full bg-primary text-ivory text-xs uppercase tracking-wide hover:bg-primary/90 transition"
+                >
+                  Register Now
+                </Link>
+                <a
+                  href="#programs"
+                  className="px-5 py-3 rounded-full border border-gold text-xs uppercase tracking-wide text-gold hover:bg-primary hover:text-ivory transition"
+                >
+                  View Courses
+                </a>
+                <a
+                  href="https://wa.me/254742574329?text=Hello%20Taji%20Luxury%20Events%20Academy%2C%20I%20would%20like%20to%20enrol%20for%20a%20course."
+                  className="px-5 py-3 rounded-full border border-white/10 text-xs uppercase tracking-wide text-mist hover:border-[#25D366] hover:text-[#25D366] transition"
+                >
+                  Enrol via WhatsApp
+                </a>
+              </div>
             </div>
           </div>
 

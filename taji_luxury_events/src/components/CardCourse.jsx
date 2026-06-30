@@ -7,13 +7,25 @@ export default function CardCourse({ course, priority = false, showAdditionalFee
   const image = normalizePath(course.image)
   const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
   const separateFeesUSD = academyAdditionalFees.reduce((total, fee) => total + Number(fee.usd || 0), 0)
+  const registrationFee = academyAdditionalFees.find((fee) => fee.label === 'Registration Fee')
   const isEstimatedCourseFeeUSD = !course.course_fee_usd
   const schoolFeeUSD = course.course_fee_usd || Math.round(Number(course.course_fee || 0) / 125)
   const totalPayableKES = Number(course.course_fee || 0) + separateFeesKES
   const totalPayableUSD = schoolFeeUSD + separateFeesUSD
+  const coursePageUrl = `/academy/courses/${course.slug}`
+  const registrationCheckoutUrl = `/academy/courses/${course.slug}?payment=registration#payment`
+  const primaryCtaLabel = showAdditionalFees ? 'Start Class' : course.cta
 
   return (
-    <article className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 hover:-translate-y-1 transition flex h-full flex-col" data-aos="fade-up">
+    <article
+      className="relative flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition hover:-translate-y-1 focus-within:-translate-y-1"
+      data-aos="fade-up"
+    >
+      <Link
+        to={coursePageUrl}
+        aria-label={`View ${course.title} course details and payment options`}
+        className="absolute inset-0 z-10 rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal"
+      />
       <div className="h-48 bg-white/5 overflow-hidden">
         <img
           src={image}
@@ -98,10 +110,10 @@ export default function CardCourse({ course, priority = false, showAdditionalFee
                   </p>
                 </div>
                 <Link
-                  to={`/checkout/${course.slug}`}
-                  className="mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-wide text-ivory hover:bg-primary/90 transition"
+                  to={registrationCheckoutUrl}
+                  className="relative z-20 mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2 text-xs uppercase tracking-wide text-ivory hover:bg-primary/90 transition"
                 >
-                  Pay 
+                  Pay - Ksh {formatKES(registrationFee?.amount || course.reg_fee || 2000)}
                 </Link>
               </div>
             </div>
@@ -123,8 +135,11 @@ export default function CardCourse({ course, priority = false, showAdditionalFee
           </ul>
         </div>
         <div className="flex justify-end mt-auto">
-          <Link to={`/checkout/${course.slug}`} className="inline-flex px-4 py-2 rounded-full border border-gold text-sm tracking-wide">
-            {course.cta}
+          <Link
+            to={coursePageUrl}
+            className="relative z-20 inline-flex rounded-full border border-gold px-4 py-2 text-sm tracking-wide"
+          >
+            {primaryCtaLabel}
           </Link>
         </div>
       </div>
