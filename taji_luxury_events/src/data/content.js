@@ -52,9 +52,9 @@ export const academyOutcomes = [
 
 export const academyAdditionalFees = [
   { label: 'Registration Fee', amount: 2000, usd: 16, note: 'One-time enrollment & application processing' },
-  { label: 'Administrative Fee', amount: 7000, usd: 55, note: 'Course coordination, student records & academic support' },
-  { label: 'Learning Resource Fee', amount: 5000, usd: 40, note: 'Course materials, templates, guides & training resources' },
-  { label: 'Examination & Certification Fee', amount: 10500, usd: 82 },
+  { label: 'Vendor Visit Fee', amount: 5000, usd: 40, note: 'Guided visits to vendors and suppliers' },
+  { label: 'Exam Fee', amount: 5000, usd: 40, note: 'Course examination and assessment' },
+  { label: 'Graduation Fee', amount: 7500, usd: 60, note: 'Graduation ceremony and certification' },
 ]
 
 export const academyPaymentDetails = {
