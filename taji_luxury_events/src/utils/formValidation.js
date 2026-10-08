@@ -15,10 +15,10 @@ export const validateField = (field) => {
     return
   }
   if (name === 'phone') {
-    if (!new RegExp(`^${kenyanPhonePattern}$`).test(value)) field.setCustomValidity('Enter a valid Kenyan mobile number, for example 0712345678 or 254712345678.')
+    if (!new RegExp(`^${kenyanPhonePattern}$`).test(value)) field.setCustomValidity('Enter a valid mobile number')
   } else if (name === 'name') {
     if (value.length < 2 || value.length > 100 || !/^[\p{L}\p{M}][\p{L}\p{M} ’'\-.]*[\p{L}\p{M}.]$/u.test(value) || (value.match(/\p{L}/gu) || []).length < 2) {
-      field.setCustomValidity('Enter a name of 2–100 characters using letters, spaces, apostrophes, hyphens, or initials.')
+      field.setCustomValidity('Enter a valid name')
     }
   } else if (field.type === 'email') {
     if (value.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) field.setCustomValidity('Enter a valid email address.')
