@@ -52,9 +52,18 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-ivory">Talk to Us</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-ivory flex gap-1">Talk to Us</p>
           <p className="mt-4 text-sm">tajiluxuryevents@gmail.com</p>
-          <p className="text-sm">Phone / WhatsApp: +254742574329</p>
+          <a
+                href="https://wa.me/254742574329?text=Hello%20Taji%20team"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 text-ivory hover:text-gold transition mt-1.5"
+              >
+                <img src="/img/whatsapp.svg" alt="WhatsApp" className="w-5 h-5 flex-shrink-0" />
+                +254 742 574 329
+              </a>
+          
           <div className="mt-6 space-y-2">
             <div className="flex space-x-3 text-sm">
               <div className="flex space-x-6 items-center justify-center text-[#c1a36e]">

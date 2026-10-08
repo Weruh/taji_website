@@ -1,3 +1,5 @@
+import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
+import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
@@ -29,7 +31,7 @@ export default function CourseDetail() {
   const handleSubmit = (event) => {
     event.preventDefault()
     const form = formRef.current
-    if (!form) return
+    if (!form || !validateForm(form)) return
     const data = new FormData(form)
     const name = String(data.get('name') || '').trim()
     const phone = String(data.get('phone') || '').trim()
@@ -127,18 +129,19 @@ export default function CourseDetail() {
                     KES {formatKES(course.course_fee)} course fee &bull; Reg. KES 2,000
                   </p>
                 </div>
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3">
+                <form ref={formRef} onSubmit={handleSubmit} noValidate onInput={validateFormInput} className="space-y-3">
+              <p className="text-xs text-mist/70">All fields are required.</p>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Full name *</span>
                     <input type="text" name="name" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
                   </label>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Phone / WhatsApp *</span>
-                    <input type="tel" name="phone" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
+                    <input {...kenyanPhoneInputProps} name="phone" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />
                   </label>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Preferred class time</span>
-                    <select name="class_time" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none">
+                    <select name="class_time" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
                       <option value="Morning">Morning</option>
                       <option value="Evening">Evening</option>
                       <option value="Weekend">Weekend</option>
@@ -146,7 +149,7 @@ export default function CourseDetail() {
                   </label>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Payment plan</span>
-                    <select name="payment_plan" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none">
+                    <select name="payment_plan" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
                       <option value="Full payment">Full payment</option>
                       <option value="Two installments">Two installments</option>
                     </select>

@@ -1,3 +1,5 @@
+import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
+import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useRef, useState } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import faqsData from '../data/faqs.json'
@@ -12,6 +14,7 @@ export default function Contact() {
     event.preventDefault()
     setError('')
     const form = event.currentTarget
+    if (!validateForm(form)) return
     const data = new FormData(form)
     const name = String(data.get('name') || '').trim()
     const email = String(data.get('email') || '').trim()
@@ -83,7 +86,8 @@ export default function Contact() {
                 </button>
               </div>
             ) : (
-              <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-4">
+              <form ref={formRef} onSubmit={handleSubmit} noValidate onInput={validateFormInput} className="space-y-4">
+              <p className="text-xs text-mist/70">All fields are required.</p>
                 <label className="block text-sm">
                   <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Name *</span>
                   <input
@@ -103,19 +107,19 @@ export default function Contact() {
                   />
                 </label>
                 <label className="block text-sm">
-                  <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Phone / WhatsApp</span>
+                  <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Phone / WhatsApp *</span>
                   <input
-                    type="tel"
+                    {...kenyanPhoneInputProps}
                     name="phone"
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                  />
+                  required />
                 </label>
                 <label className="block text-sm">
                   <span className="text-xs uppercase tracking-[0.3em] text-mist/70">I am interested in</span>
                   <select
                     name="interest"
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-charcoal border border-white/10 focus:border-gold focus:outline-none"
-                  >
+                   required>
                     <option value="">-- Select --</option>
                     <option>Wedding Planning</option>
                     <option>Wedding Decor and Styling</option>
@@ -131,10 +135,10 @@ export default function Contact() {
                 <label className="block text-sm">
                   <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Date of Event</span>
                   <input
-                    type="date"
+                    type="date" min={localToday()}
                     name="event_date"
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                  />
+                  required />
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <label className="block text-sm">
@@ -142,9 +146,9 @@ export default function Contact() {
                     <input
                       type="number"
                       name="guests"
-                      min="1"
+                      min="1" step="1"
                       className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                    />
+                    required />
                   </label>
                   <label className="block text-sm">
                     <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Indoor / Outdoor</span>
@@ -153,7 +157,7 @@ export default function Contact() {
                       name="setting"
                       placeholder="e.g. Indoor"
                       className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                    />
+                    required />
                   </label>
                 </div>
                 <label className="block text-sm">
@@ -162,7 +166,7 @@ export default function Contact() {
                     type="text"
                     name="venue"
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                  />
+                  required />
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <label className="block text-sm">
@@ -171,7 +175,7 @@ export default function Contact() {
                       type="text"
                       name="theme"
                       className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                    />
+                    required />
                   </label>
                   <label className="block text-sm">
                     <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Colours</span>
@@ -179,7 +183,7 @@ export default function Contact() {
                       type="text"
                       name="colours"
                       className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
-                    />
+                    required />
                   </label>
                 </div>
                 <label className="block text-sm">

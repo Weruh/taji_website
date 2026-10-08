@@ -1,3 +1,5 @@
+import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
+import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useRef } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import CtaBanner from '../components/CtaBanner.jsx'
@@ -13,7 +15,7 @@ export default function Corporate() {
   const handleSubmit = (event) => {
     event.preventDefault()
     const form = formRef.current
-    if (!form) return
+    if (!form || !validateForm(form)) return
     const data = new FormData(form)
     const message = [
       'Corporate Experiences',
@@ -54,7 +56,8 @@ export default function Corporate() {
             <p className="text-sm uppercase tracking-[0.4em] text-gold/80">Share your brief</p>
             <h2 className="text-2xl font-playfair mt-2 text-ivory">Send details to WhatsApp</h2>
             <p className="text-sm text-mist/80 mt-1">We reply with timelines, budgets, and a tailored production plan.</p>
-            <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <form ref={formRef} onSubmit={handleSubmit} noValidate onInput={validateFormInput} className="mt-6 space-y-4">
+              <p className="text-xs text-mist/70">All fields are required.</p>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block text-sm text-ivory/80">
                   <span className="block mb-1">Name</span>
@@ -62,44 +65,44 @@ export default function Corporate() {
                 </label>
                 <label className="block text-sm text-ivory/80">
                   <span className="block mb-1">Phone</span>
-                  <input type="tel" name="phone" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
+                  <input {...kenyanPhoneInputProps} name="phone" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
                 </label>
               </div>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Email</span>
-                <input type="email" name="email" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="email" name="email" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Company / Brand</span>
-                <input type="text" name="company" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="text" name="company" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Date of Event</span>
-                <input type="date" name="event_date" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="date" min={localToday()} name="event_date" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Number of Guests Expected</span>
-                <input type="number" name="guests" min="1" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="number" name="guests" min="1" step="1" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Venue Location</span>
-                <input type="text" name="venue" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="text" name="venue" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Indoor / Outdoor Venue</span>
-                <input type="text" name="setting" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" placeholder="Indoor, outdoor, or hybrid" />
+                <input type="text" name="setting" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" placeholder="Indoor, outdoor, or hybrid" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Theme</span>
-                <input type="text" name="theme" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="text" name="theme" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Colours</span>
-                <input type="text" name="colours" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" />
+                <input type="text" name="colours" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
               </label>
               <label className="block text-sm text-ivory/80">
                 <span className="block mb-1">Objectives / Notes</span>
-                <textarea name="message" rows="3" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm"></textarea>
+                <textarea name="message" rows="3" className="w-full rounded-xl bg-charcoal border border-white/10 px-3 py-2 text-sm" required></textarea>
               </label>
               <button
                 type="submit"

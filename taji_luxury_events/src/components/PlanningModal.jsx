@@ -1,3 +1,5 @@
+import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
+import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useEffect, useRef } from 'react'
 import { usePlanningModal } from '../hooks/usePlanningModal.js'
 
@@ -22,6 +24,7 @@ export default function PlanningModal() {
     event.preventDefault()
     const form = formRef.current
     if (!form) return
+    if (!validateForm(form)) return
     const data = new FormData(form)
     const message = [
       'Decor Services',
@@ -71,7 +74,8 @@ export default function PlanningModal() {
             &times;
           </button>
         </div>
-        <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} noValidate onInput={validateFormInput} className="mt-6 space-y-4">
+          <p className="text-xs text-mist/70">All fields are required.</p>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="block text-sm text-ivory/80">
               <span className="block mb-1">Name</span>
@@ -79,16 +83,16 @@ export default function PlanningModal() {
             </label>
             <label className="block text-sm text-ivory/80">
               <span className="block mb-1">Phone Number</span>
-              <input type="tel" name="phone" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
+              <input {...kenyanPhoneInputProps} name="phone" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
             </label>
           </div>
           <label className="block text-sm text-ivory/80">
             <span className="block mb-1">Date of Event</span>
-            <input type="date" name="event_date" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
+            <input type="date" name="event_date" min={localToday()} className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
           </label>
           <label className="block text-sm text-ivory/80">
             <span className="block mb-1">Number of Guests Expected</span>
-            <input type="number" name="guests" min="1" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
+            <input type="number" name="guests" min="1" step="1" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required />
           </label>
           <label className="block text-sm text-ivory/80">
             <span className="block mb-1">Venue Location</span>
@@ -96,7 +100,12 @@ export default function PlanningModal() {
           </label>
           <label className="block text-sm text-ivory/80">
             <span className="block mb-1">Indoor / Outdoor Venue</span>
-            <input type="text" name="setting" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" placeholder="Indoor, outdoor, or hybrid" required />
+            <select name="setting" defaultValue="" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm" required>
+              <option value="" disabled>Select venue type</option>
+              <option value="Indoor">Indoor</option>
+              <option value="Outdoor">Outdoor</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
           </label>
           <label className="block text-sm text-ivory/80">
             <span className="block mb-1">Theme</span>

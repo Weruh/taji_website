@@ -1,3 +1,4 @@
+import { validateForm, validateFormInput } from '../utils/formValidation.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
@@ -54,14 +55,20 @@ export default function Checkout() {
       ? Math.ceil(subtotalKES / 2)
       : subtotalKES
 
-  const handlePaystackPayment = async () => {
+  const handlePaystackPayment = async (event) => {
+    event.preventDefault()
+    if (isSubmitting) return
+    setErrors([])
+    setStatusMessage('')
+    const form = event.currentTarget
+    if (!validateForm(form)) return
+    const email = form.querySelector('#email').value.trim()
+    const name = form.querySelector('#name').value.trim()
+
     if (!PAYSTACK_PUBLIC_KEY) {
-      setErrors(['Paystack public key is missing'])
+      setErrors(['Online payment is currently unavailable. Please contact us for help with enrollment.'])
       return
     }
-
-    const email = document.getElementById('email').value.trim()
-    const name = document.getElementById('name').value.trim()
 
     if (!name || !email) {
       setErrors(['Please fill in your name and email before paying.'])
@@ -261,7 +268,7 @@ export default function Checkout() {
               </div>
             )}
 
-            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+            <form noValidate onInput={(event) => { validateFormInput(event); setErrors([]) }} className="space-y-4" onSubmit={handlePaystackPayment}>
               <div className="rounded-2xl border border-gold/20 bg-gold/10 p-4">
                 <p className="text-xs uppercase tracking-[0.35em] text-gold/80">Payment Breakdown</p>
                 {isRegistrationPayment ? (
@@ -328,8 +335,7 @@ export default function Checkout() {
               </div>
 
               <button
-                type="button"
-                onClick={handlePaystackPayment}
+                type="submit"
                 disabled={isSubmitting}
                 className="w-full rounded-full border border-gold bg-gold/10 px-5 py-3 text-sm uppercase tracking-[0.4em] text-gold transition hover:bg-gold hover:text-charcoal disabled:cursor-not-allowed disabled:opacity-70"
               >
