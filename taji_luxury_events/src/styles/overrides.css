@@ -71,7 +71,7 @@
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(197, 165, 114, 0.8) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(152, 31, 47, 0.8) 0%, transparent 70%);
   animation: pulse 12s ease-in-out infinite;
 }
 
@@ -80,7 +80,7 @@
   position: absolute;
   inset: -12px;
   border-radius: inherit;
-  box-shadow: 0 0 40px rgba(197, 165, 114, 0.35);
+  box-shadow: 0 0 40px rgba(152, 31, 47, 0.35);
   opacity: 0.8;
   pointer-events: none;
   animation: pulse 6s ease-in-out infinite;
@@ -95,13 +95,13 @@
     transform: translateX(-50%);
     width: 1px;
     height: calc(100% - 200px);
-    background: linear-gradient(180deg, rgba(197, 165, 114, 0.6), transparent);
+    background: linear-gradient(180deg, rgba(152, 31, 47, 0.6), transparent);
     pointer-events: none;
   }
 }
 
 .triad-shell {
-  background-color: #0b0b0c;
+  background-color: #f7f3ec;
 }
 
 .triad-noise::after {
@@ -121,7 +121,7 @@
 .triad-particle {
   position: absolute;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(197, 165, 114, 0.8), rgba(197, 165, 114, 0));
+  background: radial-gradient(circle, rgba(152, 31, 47, 0.8), rgba(152, 31, 47, 0));
   animation: triadDrift 18s linear infinite;
 }
 
@@ -184,7 +184,7 @@
   width: 45%;
   height: 1px;
   top: calc(50% + 30px);
-  background: linear-gradient(90deg, transparent, rgba(197, 165, 114, 0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(152, 31, 47, 0.5), transparent);
 }
 
 .pyramid-stack::before {
@@ -196,3 +196,16 @@
   right: 5%;
   transform: rotate(6deg);
 }
+
+/* Warm-neutral palette only; original structure and behaviour are retained. */
+[class*="border-white/"] { border-color: #ded4c8; }
+[class*="divide-white/"] > :not(:last-child) { border-color: #ded4c8; }
+[class*="bg-white/5"], .theme-light .bg-white\/5 { background-color: #efe8de !important; }
+[class*="bg-white/10"] { background-color: #e9dfd3; }
+input, select, textarea { color: #2e2522; background-color: #fbf8f3; }
+.bg-primary, .theme-light .bg-primary.text-ivory { color: #fff9f1 !important; }
+.bg-gold { color: #fff9f1; }
+footer.bg-black { background-color: #eee6db; color: #655b55; }
+footer .text-ivory, .theme-light footer .text-ivory { color: #2e2522 !important; }
+[class*="bg-rose-"][class*="text-rose-100"] { color: #881337; }
+[class*="bg-emerald-"][class*="text-emerald-100"] { color: #065f46; }
