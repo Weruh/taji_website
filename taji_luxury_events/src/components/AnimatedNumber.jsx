@@ -6,7 +6,7 @@ const parseValue = (value) => {
   return { digits, suffix }
 }
 
-export default function StatCounter({ value, label }) {
+export default function AnimatedNumber({ value, label }) {
   const [display, setDisplay] = useState('0')
   const ref = useRef(null)
   const startedRef = useRef(false)

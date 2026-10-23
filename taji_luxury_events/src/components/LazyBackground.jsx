@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ResponsiveImage from './ResponsiveImage.jsx'
 
 export default function LazyBackground({ src, className = '', alt = '', priority = false, children = null }) {
   const [isVisible, setIsVisible] = useState(priority)
@@ -26,11 +27,20 @@ export default function LazyBackground({ src, className = '', alt = '', priority
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={isVisible ? { backgroundImage: `url('${src}')` } : undefined}
+      className={`relative isolate overflow-hidden ${className}`}
       role="img"
       aria-label={alt}
     >
+      {isVisible && (
+        <ResponsiveImage
+          src={src}
+          alt=""
+          sizes="(min-width: 1280px) 1200px, 100vw"
+          className="absolute inset-0 -z-10 h-full w-full object-cover"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
+        />
+      )}
       {children}
     </div>
   )

@@ -48,13 +48,13 @@ export default function PlanningModal() {
   return (
     <div
       id="planning-modal"
-      className={`fixed inset-0 z-50 items-center justify-center px-4 ${isOpen ? 'flex' : 'hidden'}`}
+      className={`fixed inset-0 z-50 items-center justify-center px-3 py-4 sm:px-4 ${isOpen ? 'flex' : 'hidden'}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="planning-modal-title"
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur" onClick={close} aria-hidden="true"></div>
-      <div className="relative max-w-xl w-full rounded-3xl border border-white/10 bg-charcoal p-8 shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
+      <div className="relative max-h-[calc(100dvh-2rem)] w-full max-w-xl overflow-y-auto overscroll-contain rounded-3xl border border-white/10 bg-charcoal p-4 shadow-[0_30px_90px_rgba(0,0,0,0.6)] sm:p-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.5em] text-gold">Decor Services</p>

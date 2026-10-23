@@ -1,13 +1,15 @@
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { normalizePath } from '../utils/media.js'
 
 export default function TestimonialCard({ testimonial }) {
   return (
     <figure className="p-8 rounded-3xl border border-white/10 bg-white/5 h-full flex flex-col gap-4">
       <div className="flex items-center space-x-3">
-        <img
+        <ResponsiveImage
           src={normalizePath(testimonial.avatar)}
           alt={`${testimonial.name} avatar`}
           className="h-12 w-12 rounded-full object-cover border border-white/10"
+          sizes="48px"
           loading="lazy"
         />
         <div>

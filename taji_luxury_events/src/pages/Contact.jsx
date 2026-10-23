@@ -140,7 +140,7 @@ export default function Contact() {
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
                   required />
                 </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Guests Expected</span>
                     <input
@@ -168,7 +168,7 @@ export default function Contact() {
                     className="mt-1 w-full rounded-2xl px-4 py-3 bg-white/5 border border-white/10 focus:border-gold focus:outline-none"
                   required />
                 </label>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label className="block text-sm">
                     <span className="text-xs uppercase tracking-[0.3em] text-mist/70">Theme</span>
                     <input

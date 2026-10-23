@@ -28,3 +28,9 @@ The shared Start Planning popup collects contact details, an event date, guest c
 ## Technology
 
 React frontend with a Node.js/Express backend for Paystack payment processing.
+
+## Image loading
+
+Run frontend commands from `taji_luxury_events`. Both `npm run dev` and `npm run build` automatically generate compressed WebP sizes from the original pictures in `public/img`. Originals are preserved; generated files in `public/img/optimized` and `src/generated/images.json` are ignored by Git and included in the build automatically.
+
+Use `ResponsiveImage` for photos and set `sizes` to their displayed width. Images load lazily by default; use `loading="eager"` and `fetchPriority="high"` for the main image at the top of a page. After adding or replacing originals while the dev server is running, run `npm run images:optimize` to refresh their sizes.

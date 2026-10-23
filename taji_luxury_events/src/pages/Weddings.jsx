@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import CtaBanner from '../components/CtaBanner.jsx'
 import { weddingMedia } from '../data/media.js'
@@ -33,7 +34,7 @@ export default function Weddings() {
           <div className="grid gap-4 md:grid-cols-4">
             {weddingMedia.map((media, index) => (
               <figure key={`${media}-${index}`} className="h-56 rounded-2xl overflow-hidden">
-                <img src={media} alt={`Weddings showcase ${index + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy" />
+                <ResponsiveImage src={media} alt={`Weddings showcase ${index + 1}`} sizes="(min-width: 1280px) 288px, (min-width: 768px) 25vw, 100vw" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" loading="lazy" />
               </figure>
             ))}
           </div>

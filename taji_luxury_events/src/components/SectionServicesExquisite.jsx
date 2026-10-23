@@ -1,3 +1,4 @@
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { useEffect, useMemo, useRef } from 'react'
 import { normalizePath } from '../utils/media.js'
 
@@ -49,7 +50,7 @@ export default function SectionServicesExquisite({ services }) {
                 data-aos-delay={index * 120}
               >
                 <div className="service-image-container">
-                  <img src={normalizePath(service.image)} alt={service.title} className="service-image" loading="lazy" />
+                  <ResponsiveImage src={normalizePath(service.image)} alt={service.title} className="service-image" loading="lazy" />
                   <div className="service-image-overlay"></div>
                 </div>
                 <div className="service-content flex flex-1 flex-col gap-4">

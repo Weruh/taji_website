@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import CardService from '../components/CardService.jsx'
 import CtaBanner from '../components/CtaBanner.jsx'
@@ -63,7 +64,7 @@ export default function Events() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {eventImages.slice(0, 12).map((media, index) => (
                 <figure key={`${media}-${index}`} className="rounded-3xl overflow-hidden border border-white/10 group">
-                  <img src={media} alt={`Taji Luxury Events showcase ${index + 1}`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                  <ResponsiveImage src={media} alt={`Taji Luxury Events showcase ${index + 1}`} className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                 </figure>
               ))}
             </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import ResponsiveImage from './ResponsiveImage.jsx'
 
 export default function HeroCinematic({ slides = [], fallbackSlides = [] }) {
   const mediaSlides = useMemo(() => {
@@ -12,6 +13,7 @@ export default function HeroCinematic({ slides = [], fallbackSlides = [] }) {
   const [offset, setOffset] = useState(0)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [playVideo, setPlayVideo] = useState(false)
+  const [heroReady, setHeroReady] = useState(false)
   const [loadedSlides, setLoadedSlides] = useState(() => (mediaSlides.length ? new Set([0]) : new Set()))
 
   useEffect(() => {
@@ -36,43 +38,51 @@ export default function HeroCinematic({ slides = [], fallbackSlides = [] }) {
 
   useEffect(() => {
     if (!mediaSlides.length) return
-    setLoadedSlides((prev) => {
-      const next = new Set(prev)
-      next.add(currentSlide)
-      next.add((currentSlide + 1) % mediaSlides.length)
-      return next
-    })
-  }, [currentSlide, mediaSlides.length])
+    setLoadedSlides((prev) => new Set(prev).add(currentSlide))
+    if (!heroReady) return
+    const timeoutId = window.setTimeout(() => {
+      setLoadedSlides((prev) => new Set(prev).add((currentSlide + 1) % mediaSlides.length))
+    }, 1500)
+    return () => window.clearTimeout(timeoutId)
+  }, [currentSlide, mediaSlides.length, heroReady])
 
   useEffect(() => {
-    let cleanup = () => {}
-    const startVideo = () => setPlayVideo(true)
-    if (typeof window !== 'undefined') {
+    if (!heroReady) return
+    const connection = navigator.connection
+    if (connection?.saveData || /(^|-)2g|3g/.test(connection?.effectiveType || '') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let idleId
+    const timeoutId = window.setTimeout(() => {
       if ('requestIdleCallback' in window) {
-        const idleId = window.requestIdleCallback(startVideo, { timeout: 1500 })
-        cleanup = () => window.cancelIdleCallback?.(idleId)
+        idleId = window.requestIdleCallback(() => setPlayVideo(true), { timeout: 1500 })
       } else {
-        const timeoutId = window.setTimeout(startVideo, 500)
-        cleanup = () => window.clearTimeout(timeoutId)
+        setPlayVideo(true)
       }
+    }, 3000)
+    return () => {
+      window.clearTimeout(timeoutId)
+      if (idleId !== undefined) window.cancelIdleCallback?.(idleId)
     }
-    return () => cleanup()
-  }, [])
+  }, [heroReady])
 
   return (
     <section className="relative min-h-[720px] overflow-hidden text-black">
       <div className="absolute inset-0" aria-hidden="true" style={{ transform: `translate3d(0, ${offset * -0.4}px, 0)` }}>
+        <ResponsiveImage
+          src="/img/hero/ZWSVicoxm3oCiSi2KqrMn.webp"
+          alt=""
+          sizes="100vw"
+          loading="eager"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <video
-          className="h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
+          src={playVideo ? '/img/hero/fHXSGE07H8SCQHCnKssbf_output.mp4' : undefined}
           autoPlay={playVideo}
           muted
           loop
           playsInline
           preload={playVideo ? 'auto' : 'none'}
-          poster="/img/hero/ZWSVicoxm3oCiSi2KqrMn.webp"
-        >
-          <source src="/img/hero/fHXSGE07H8SCQHCnKssbf_output.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0">
           {mediaSlides.map((slide, index) => (
             <div
@@ -80,8 +90,19 @@ export default function HeroCinematic({ slides = [], fallbackSlides = [] }) {
               className={`absolute inset-0 bg-cover bg-center transition-opacity duration-500 ease-linear ${
                 index === currentSlide ? 'opacity-80 mix-blend-screen' : 'opacity-0'
               }`}
-              style={loadedSlides.has(index) ? { backgroundImage: `url('${slide.src}')` } : undefined}
-            ></div>
+            >
+              {loadedSlides.has(index) && (
+                <ResponsiveImage
+                  src={slide.src}
+                  alt=""
+                  sizes="100vw"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                  fetchPriority={index === 0 ? 'high' : 'low'}
+                  onLoad={index === 0 ? () => setHeroReady(true) : undefined}
+                />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -138,10 +159,11 @@ export default function HeroCinematic({ slides = [], fallbackSlides = [] }) {
                   key={`${media.src}-${index}`}
                   className="relative flex-shrink-0 w-32 h-20 rounded-2xl overflow-hidden border border-white/10"
                 >
-                  <img
+                  <ResponsiveImage
                     src={media.src}
                     alt={media.alt}
                     className="h-full w-full object-cover"
+                    sizes="128px"
                     loading="lazy"
                     decoding="async"
                     fetchPriority="low"

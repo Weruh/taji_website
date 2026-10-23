@@ -19,8 +19,11 @@ const Success = lazy(() => import('./pages/Success.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 
 const resolveStoredTheme = () => {
-  const stored = localStorage.getItem('taji-theme')
-  return stored === 'theme-light' ? 'theme-light' : 'theme-dark'
+  try {
+    return localStorage.getItem('taji-theme') === 'theme-light' ? 'theme-light' : 'theme-dark'
+  } catch {
+    return 'theme-light'
+  }
 }
 
 export default function App() {
@@ -74,7 +77,11 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.remove('theme-dark', 'theme-light')
     document.documentElement.classList.add(theme)
-    localStorage.setItem('taji-theme', theme)
+    try {
+      localStorage.setItem('taji-theme', theme)
+    } catch {
+      // The selected theme still works when browser storage is unavailable.
+    }
   }, [theme])
 
   const planningValue = useMemo(

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { NavLink } from 'react-router-dom'
 import { navLinks } from '../data/content.js'
 import { usePlanningModal } from '../hooks/usePlanningModal.js'
@@ -18,10 +19,12 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-16 md:h-20">
           <NavLink to="/" className="flex items-center gap-3 min-w-0" onClick={() => setOpen(false)}>
-            <img
+            <ResponsiveImage
               src="/img/logos/TAJIMAINBRAND.png"
               alt="Taji Luxury Events logo"
               className="h-10 w-10 md:h-12 md:w-12 object-contain flex-shrink-0"
+              sizes="48px"
+              loading="eager"
             />
             <div className="leading-tight">
               <p className="text-sm md:text-base font-semibold tracking-wide uppercase text-ivory truncate">
@@ -113,7 +116,7 @@ export default function Navbar() {
       </div>
 
       {open ? (
-        <div className="lg:hidden" aria-label="Mobile navigation">
+        <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain md:max-h-[calc(100dvh-5rem)] lg:hidden" aria-label="Mobile navigation">
           <div className="border-t border-white/10 bg-charcoal/98 backdrop-blur-2xl shadow-2xl">
             <nav className="px-3 pt-4 pb-2 space-y-1">
               {navLinks.map((item) => (

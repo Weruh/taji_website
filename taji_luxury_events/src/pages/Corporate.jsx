@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
 import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useRef } from 'react'
@@ -149,7 +150,7 @@ export default function Corporate() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {eventImages.map((media, index) => (
               <figure key={`${media}-${index}`} className="rounded-3xl overflow-hidden border border-white/10">
-                <img src={media} alt={`Corporate showcase ${index + 1}`} className="w-full h-56 object-cover" loading="lazy" />
+                <ResponsiveImage src={media} alt={`Corporate showcase ${index + 1}`} className="w-full h-56 object-cover" loading="lazy" />
               </figure>
             ))}
           </div>

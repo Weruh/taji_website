@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useEffect, useMemo, useState } from 'react'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import galleryFallback from '../data/gallery.json'
@@ -83,17 +84,16 @@ export default function Gallery() {
               className={`relative group h-full min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg shadow-black/20 ${tileLayouts[index % tileLayouts.length]}`}
               onClick={() => open(media.src, media.alt)}
             >
-              <span
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                style={{ backgroundImage: `url("${media.src}")` }}
-                aria-hidden="true"
-              />
-              <img
+              <ResponsiveImage
                 src={media.src}
                 alt={media.alt}
-                className="sr-only"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes={index % tileLayouts.length === 0
+                  ? '(min-width: 1280px) 768px, (min-width: 1024px) 66vw, 100vw'
+                  : '(min-width: 1280px) 384px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'}
+                loading={index === 0 ? 'eager' : 'lazy'}
                 decoding="async"
-                fetchPriority={index < 6 ? 'high' : 'auto'}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
                 onError={() => {
                   setFailedImages((current) => {
                     const next = new Set(current)
@@ -112,7 +112,7 @@ export default function Gallery() {
 
       {isOpen ? (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4" role="dialog" aria-modal="true" onClick={close}>
-          <div className="relative max-w-4xl w-full" onClick={(event) => event.stopPropagation()}>
+          <div className="relative min-w-0 max-w-4xl w-full" onClick={(event) => event.stopPropagation()}>
             <button
               type="button"
               className="absolute -top-12 right-0 text-ivory/70 hover:text-ivory text-sm uppercase tracking-widest flex items-center gap-2"
@@ -120,7 +120,7 @@ export default function Gallery() {
             >
               Close <span aria-hidden="true">&times;</span>
             </button>
-            <img src={activeSrc} alt={activeAlt} className="rounded-2xl w-full max-h-[80vh] object-contain shadow-2xl" />
+            <ResponsiveImage src={activeSrc} alt={activeAlt} sizes="(min-width: 1024px) 896px, 100vw" loading="eager" fetchPriority="high" className="rounded-2xl w-full max-h-[80vh] object-contain shadow-2xl" />
             <p className="mt-3 text-sm text-mist/70 text-center">{activeAlt}</p>
           </div>
         </div>

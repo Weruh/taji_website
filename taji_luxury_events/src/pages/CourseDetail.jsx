@@ -66,8 +66,8 @@ export default function CourseDetail() {
           <LazyBackground className="h-80 bg-cover bg-center" src={course.image} alt={`${course.title} cover`} priority>
             <div className="h-full w-full bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
           </LazyBackground>
-          <div className="p-8 grid gap-10 md:grid-cols-[2fr_1fr]">
-            <div className="space-y-6">
+          <div className="grid min-w-0 gap-8 p-4 sm:p-8 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:gap-10">
+            <div className="min-w-0 space-y-6">
               <Breadcrumbs
                 crumbs={[
                   { label: 'Home', url: '/' },
@@ -85,9 +85,18 @@ export default function CourseDetail() {
                 ) : null}
               </div>
               {course.timetable?.length ? (
-                <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
+                <div className="min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 sm:px-5">
                   <h2 className="text-xs uppercase tracking-[0.4em] text-gold mb-3">Class Timetable</h2>
-                  <div className="overflow-x-auto">
+                  <div className="space-y-3 sm:hidden">
+                    {course.timetable.map((slot) => (
+                      <div key={slot.days} className="border-t border-white/10 pt-3 text-sm first:border-t-0 first:pt-0">
+                        <p className="font-semibold">{slot.days}</p>
+                        {slot.morning ? <p className="mt-1 text-mist">Morning: {slot.morning}</p> : null}
+                        {slot.evening ? <p className="mt-1 text-mist">Evening: {slot.evening}</p> : null}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="hidden max-w-full overflow-x-auto sm:block">
                     <table className="w-full min-w-[430px] text-left text-sm">
                       <thead><tr className="border-b border-white/10"><th className="py-2">Days</th><th className="py-2">Morning</th><th className="py-2">Evening</th></tr></thead>
                       <tbody>{course.timetable.map((slot) => <tr key={slot.days} className="border-b border-white/10 last:border-0"><th className="py-2 font-semibold">{slot.days}</th><td className="py-2">{slot.morning || '—'}</td><td className="py-2">{slot.evening || '—'}</td></tr>)}</tbody>
@@ -107,7 +116,7 @@ export default function CourseDetail() {
                   ))}
                 </ul>
               </div>
-              <div className="rounded-3xl border border-white/10 p-6">
+              <div className="min-w-0 rounded-3xl border border-white/10 p-4 sm:p-6">
                 <p className="text-sm uppercase tracking-[0.4em] text-gold/80">Investment</p>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -126,8 +135,8 @@ export default function CourseDetail() {
                 <p className="mt-4 text-xs text-mist/60">Tuition and additional fees are shown separately. The training materials fee appears only for applicable courses.</p>
               </div>
             </div>
-            <aside className="space-y-4 self-start sticky top-24">
-              <div className="rounded-3xl border border-gold/40 bg-gold/10 p-6 space-y-4">
+            <aside className="min-w-0 space-y-4 self-start md:sticky md:top-24">
+              <div className="min-w-0 rounded-3xl border border-gold/40 bg-gold/10 p-4 sm:p-6 space-y-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.4em] text-gold/70">Enrol Now</p>
                   <p className="text-2xl font-playfair text-gold mt-1">{course.title}</p>

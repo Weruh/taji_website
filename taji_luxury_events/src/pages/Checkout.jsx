@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { validateForm, validateFormInput } from '../utils/formValidation.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams, useSearchParams } from 'react-router-dom'
@@ -7,7 +8,7 @@ import { academyAdditionalFees } from '../data/content.js'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
 import { feesForCourse } from '../utils/academyFees.js'
-import { API_BASE_URL, PAYSTACK_PUBLIC_KEY } from '../config/payments.js'
+import { API_BASE_URL, PAYSTACK_PUBLIC_KEY, ensurePaystackLoaded } from '../config/payments.js'
 
 const courses = normalizeMediaList(coursesData, ['image'])
 
@@ -81,6 +82,15 @@ export default function Checkout() {
     setErrors([])
     setStatusMessage('')
     setIsSubmitting(true)
+
+    try {
+      await ensurePaystackLoaded()
+    } catch (error) {
+      console.error(error)
+      setErrors(['Online checkout could not load. Please try again or contact Taji for help.'])
+      setIsSubmitting(false)
+      return
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/paystack/initialize`, {
@@ -215,10 +225,13 @@ export default function Checkout() {
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
           <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
-            <img
+            <ResponsiveImage
               src={course.image}
               alt={`${course.title} course`}
               className="h-56 w-full object-cover"
+              sizes="(min-width: 1024px) 640px, 100vw"
+              loading="eager"
+              fetchPriority="high"
               width="900"
               height="520"
             />

@@ -1,10 +1,11 @@
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { normalizePath } from '../utils/media.js'
 
 export default function CardService({ service }) {
   return (
     <article className="rounded-3xl overflow-hidden border border-white/10 bg-charcoal/40 hover:-translate-y-1 hover:border-gold/40 transition group" data-aos="fade-up">
       <div className="h-48 overflow-hidden">
-        <img
+        <ResponsiveImage
           src={normalizePath(service.image)}
           alt={service.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"

@@ -1,3 +1,4 @@
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { Link } from 'react-router-dom'
 import { normalizePath } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
@@ -9,10 +10,11 @@ export default function CardCourse({ course, priority = false, showAdditionalFee
   return (
     <article className="academy-course-card flex h-full flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/5 transition hover:-translate-y-1" data-aos="fade-up">
       <Link to={coursePageUrl} aria-label={`View ${course.title} course details`} className="block h-48 overflow-hidden">
-        <img
+        <ResponsiveImage
           src={normalizePath(course.image)}
           alt={`${course.title} visual`}
           className="h-full w-full object-cover"
+          sizes="(min-width: 640px) 384px, 100vw"
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : 'auto'}
           width="640"

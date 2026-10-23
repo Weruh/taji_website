@@ -1,3 +1,4 @@
+import ResponsiveImage from '../components/ResponsiveImage.jsx'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
@@ -39,11 +40,13 @@ export default function Academy() {
             industry. Early registration is essential for the current intake.
           </p>
           <figure className="rounded-3xl overflow-hidden border border-white/10 bg-white/5">
-            <img
+            <ResponsiveImage
               src="/img/academy/Academy.webp"
               alt="Taji Academy training session"
-              className="w-full h-[620px] md:h-[840px] object-cover"
-              loading="lazy"
+              className="h-80 w-full object-cover sm:h-[520px] md:h-[840px]"
+              sizes="(min-width: 1024px) 1024px, 100vw"
+              loading="eager"
+              fetchPriority="high"
             />
           </figure>
           <div className="grid gap-6 md:grid-cols-3 mt-8">
@@ -153,8 +156,8 @@ export default function Academy() {
             </div>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {filteredCourses.map((course, index) => (
-              <CardCourse key={course.slug} course={course} priority={index < 3} showAdditionalFees />
+            {filteredCourses.map((course) => (
+              <CardCourse key={course.slug} course={course} showAdditionalFees />
             ))}
           </div>
         </div>
@@ -166,7 +169,7 @@ export default function Academy() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {academyStudioMedia.map((image) => (
               <figure key={image} className="rounded-3xl overflow-hidden border border-white/10">
-                <img src={image} alt="Inside the studio moment" className="h-64 w-full object-cover" loading="lazy" />
+                <ResponsiveImage src={image} alt="Inside the studio moment" className="h-64 w-full object-cover" loading="lazy" />
               </figure>
             ))}
           </div>

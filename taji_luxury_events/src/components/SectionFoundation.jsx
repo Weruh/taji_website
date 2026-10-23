@@ -1,3 +1,4 @@
+import ResponsiveImage from './ResponsiveImage.jsx'
 import { useEffect, useRef } from 'react'
 
 export default function SectionFoundation() {
@@ -33,10 +34,11 @@ export default function SectionFoundation() {
       </div>
 
       <div className="foundation-visual max-w-5xl mx-auto mt-16 relative z-10">
-        <img
+        <ResponsiveImage
           src="/img/academy/tajimainlogo.webp"
           alt="Taji foundation triangle artwork"
           className="w-full h-auto rounded-[32px] border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.7)] object-cover"
+          sizes="(min-width: 1024px) 1024px, 100vw"
           loading="lazy"
         />
       </div>

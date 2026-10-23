@@ -6,7 +6,7 @@ import HeroCinematic from '../components/HeroCinematic.jsx'
 import SectionServicesExquisite from '../components/SectionServicesExquisite.jsx'
 import SectionFoundation from '../components/SectionFoundation.jsx'
 import CtaBanner from '../components/CtaBanner.jsx'
-import StatCounter from '../components/StatCounter.jsx'
+import AnimatedNumber from '../components/AnimatedNumber.jsx'
 import CardCourse from '../components/CardCourse.jsx'
 import TestimonialCard from '../components/TestimonialCard.jsx'
 import coursesData from '../data/courses.json'
@@ -31,7 +31,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-3 divide-x divide-white/10">
             {stats.map((stat) => (
-              <StatCounter key={stat.label} value={stat.value} label={stat.label} />
+              <AnimatedNumber key={stat.label} value={stat.value} label={stat.label} />
             ))}
           </div>
         </div>
@@ -52,7 +52,7 @@ export default function Home() {
 
           <div className="flex w-full space-x-8 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth py-6">
             {courses.map((course) => (
-              <div key={course.slug} className="flex-shrink-0 w-[350px] snap-start">
+              <div key={course.slug} className="w-[calc(100vw-2rem)] flex-shrink-0 snap-start sm:w-[350px]">
                 <CardCourse course={course} />
               </div>
             ))}
