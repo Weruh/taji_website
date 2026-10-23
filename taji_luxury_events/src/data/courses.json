@@ -5,7 +5,7 @@
     "level": "Beginner",
     "duration": "1 Month",
     "mode": "Online",
-    "schedule": "Mon and Tue: Morning 10:30AM-11:30AM or Evening 7:30PM-8:30PM",
+    "schedule": "Mon, Tue, Wed: 10:30–11:30 am or 7:30–8:30 pm",
     "summary": "Learn event planning, coordination, execution, budgeting, vendor sourcing, client management, contracts, and business growth for the events industry.",
     "outcomes": [
       "Event planning, coordination and execution",
@@ -21,20 +21,34 @@
     "reg_fee": 2000,
     "course_fee": 36500,
     "course_fee_usd": 285,
-    "total_fee": 38500,
     "details": [
-      "Ideal for anyone who wants to start an events business, work in event companies, or manage social events professionally.",
-      "Classes run online on Mon and Tue.",
-      "Choose either the morning or evening class."
+      "Ideal for anyone starting an events business, working in an events company, or managing social events professionally."
+    ],
+    "timetable": [
+      {
+        "days": "Mon, Tue, Wed",
+        "morning": "10:30–11:30 am",
+        "evening": "7:30–8:30 pm"
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Morning",
+        "schedule": "Mon, Tue, Wed · 10:30–11:30 am"
+      },
+      {
+        "label": "Evening",
+        "schedule": "Mon, Tue, Wed · 7:30–8:30 pm"
+      }
     ]
   },
   {
     "slug": "wedding-decor-styling",
     "title": "Wedding Decor and Styling",
     "level": "All Levels",
-    "duration": "1 Month",
+    "duration": "2 Months",
     "mode": "Hybrid",
-    "schedule": "Thur and Fri: Morning 10:30AM-12:00PM or Evening 7:00PM-9:00PM | Sat: 11:00AM-1:00PM",
+    "schedule": "Thu, Fri: 10:30 am–12:00 pm or 7:00–9:00 pm; Sat: 11:00 am–1:00 pm",
     "summary": "Build the skills needed to start a decor business or work in high-end event setups, from decor engineering to luxury table styling.",
     "outcomes": [
       "Decor engineering and structural balance",
@@ -49,21 +63,40 @@
     "image": "/static/img/academy/design.webp",
     "reg_fee": 2000,
     "course_fee": 59500,
-    "course_fee_usd": 465,
-    "total_fee": 61500,
+    "course_fee_usd": 495,
     "details": [
-      "Equips you with practical skills for high-end event decor and styling.",
-      "Thur and Fri classes have morning and evening options.",
-      "Saturday class runs from 11:00AM-1:00PM."
+      "Develop practical skills to start a décor business or work on high-end event setups."
+    ],
+    "timetable": [
+      {
+        "days": "Thu, Fri",
+        "morning": "10:30 am–12:00 pm",
+        "evening": "7:00–9:00 pm"
+      },
+      {
+        "days": "Sat",
+        "morning": "11:00 am–1:00 pm",
+        "evening": null
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Morning + Saturday",
+        "schedule": "Thu, Fri · 10:30 am–12:00 pm; Sat · 11:00 am–1:00 pm"
+      },
+      {
+        "label": "Evening + Saturday",
+        "schedule": "Thu, Fri · 7:00–9:00 pm; Sat · 11:00 am–1:00 pm"
+      }
     ]
   },
   {
     "slug": "floral-design",
     "title": "Floral Design",
     "level": "Intermediate",
-    "duration": "1-2 Months",
-    "mode": "Physical",
-    "schedule": "Weekday: Mon and Tue 11:00AM-1:00PM for 1 month | Weekend: Sat 11:00AM-1:00PM for 2 months",
+    "duration": "2 Months",
+    "mode": "Hybrid",
+    "schedule": "Mon, Tue: 11:00 am–1:00 pm, or Sat: 11:00 am–1:00 pm",
     "summary": "Prepare to offer professional floral services for weddings, corporate events, and luxury celebrations.",
     "outcomes": [
       "Bridal bouquets",
@@ -78,44 +111,124 @@
     "reg_fee": 2000,
     "course_fee": 80000,
     "course_fee_usd": 645,
-    "total_fee": 82000,
     "details": [
-      "Master floral artistry for exclusive events.",
-      "Weekday option: Mon and Tue, 11:00AM-1:00PM, 1 month.",
-      "Weekend option: Saturday, 11:00AM-1:00PM, 2 months."
+      "Prepare to offer professional floral services for weddings, corporate events, and luxury celebrations."
+    ],
+    "timetable": [
+      {
+        "days": "Mon, Tue",
+        "morning": "11:00 am–1:00 pm",
+        "evening": null
+      },
+      {
+        "days": "Sat (alternative)",
+        "morning": "11:00 am–1:00 pm",
+        "evening": null
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Weekday",
+        "schedule": "Mon, Tue · 11:00 am–1:00 pm"
+      },
+      {
+        "label": "Saturday",
+        "schedule": "Sat · 11:00 am–1:00 pm"
+      }
     ]
   },
   {
     "slug": "balloon-design",
     "title": "Balloon Design",
     "level": "All Levels",
-    "duration": "1 Month",
-    "mode": "Physical",
+    "duration": "2 Months",
+    "mode": "Hybrid",
     "summary": "Create sculptural balloon art, backdrops, and immersive focal points for luxury celebrations.",
     "outcomes": [
       "Installation safety and engineering",
-      "Palette blending and colour theory",
+      "Palette blending and color theory",
       "Hybrid material techniques",
-      "Client briefing and pricing bundles"
+      "Large-scale balloon forms and backdrops",
+      "Client briefing and pricing bundles",
+      "Install blueprints and focal point execution"
     ],
     "cta": "Start Classes",
     "image": "/static/img/academy/ballon.webp",
     "reg_fee": 2000,
     "course_fee": 65000,
-    "total_fee": 67000,
     "details": [
-      "Training materials fee applies to Balloon Design students.",
-      "Structural engineering for large-scale balloon forms and backdrops.",
-      "Client briefing kits with install blueprints."
+      "Create sculptural balloon art, backdrops, and immersive focal points for luxury celebrations."
+    ],
+    "course_fee_usd": 520,
+    "schedule": "Thu, Fri: 10:30–11:30 am; Sat: 10:30 am–1:00 pm",
+    "timetable": [
+      {
+        "days": "Thu, Fri",
+        "morning": "10:30–11:30 am",
+        "evening": null
+      },
+      {
+        "days": "Sat",
+        "morning": "10:30 am–1:00 pm",
+        "evening": null
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Morning + Saturday",
+        "schedule": "Thu, Fri · 10:30–11:30 am; Sat · 10:30 am–1:00 pm"
+      }
+    ]
+  },
+  {
+    "slug": "business-development-growth",
+    "title": "Business Development & Growth",
+    "level": "All Levels",
+    "duration": "2 Months",
+    "mode": "Online",
+    "schedule": "Tue, Thu: 7:30–9:00 am or 7:30–9:00 pm",
+    "timetable": [
+      {
+        "days": "Tue, Thu",
+        "morning": "7:30–9:00 am",
+        "evening": "7:30–9:00 pm"
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Morning",
+        "schedule": "Tue, Thu · 7:30–9:00 am"
+      },
+      {
+        "label": "Evening",
+        "schedule": "Tue, Thu · 7:30–9:00 pm"
+      }
+    ],
+    "summary": "Discover business opportunities, win customers, grow revenue, and build a strategy to start or scale a business.",
+    "outcomes": [
+      "Opportunity discovery and market intelligence",
+      "Customer acquisition systems",
+      "Sales and revenue growth",
+      "Strategic partnerships and business networking",
+      "Growth strategy and market expansion",
+      "Business development and growth project"
+    ],
+    "cta": "View Course",
+    "image": "/static/img/academy/management.webp",
+    "reg_fee": 2000,
+    "course_fee": 49500,
+    "course_fee_usd": 385,
+    "details": [
+      "For entrepreneurs who want the knowledge and tools to build and scale a business."
     ]
   },
   {
     "slug": "corporate-event-management",
     "title": "Corporate Event Management",
     "level": "Professional",
-    "duration": "1 Month",
+    "duration": "2 Months",
     "mode": "Online",
-    "schedule": "Thur and Fri: Morning 7:30AM-8:30AM or Evening 7:30PM-8:30PM",
+    "schedule": "Thu, Fri: 7:30–8:30 am or 7:30–8:30 pm",
     "summary": "Plan, manage, and execute profitable corporate events including conferences, product launches, brand activations, award ceremonies, summits, and corporate dinners.",
     "outcomes": [
       "Understanding corporate events and business objectives",
@@ -130,11 +243,27 @@
     "reg_fee": 2000,
     "course_fee": 70000,
     "course_fee_usd": 565,
-    "total_fee": 72000,
     "details": [
       "Corporate events are among the most profitable and structured sectors of the events industry.",
       "Learn to plan, manage, and execute corporate events successfully.",
       "Morning and evening class options are available."
+    ],
+    "timetable": [
+      {
+        "days": "Thu, Fri",
+        "morning": "7:30–8:30 am",
+        "evening": "7:30–8:30 pm"
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Morning",
+        "schedule": "Thu, Fri · 7:30–8:30 am"
+      },
+      {
+        "label": "Evening",
+        "schedule": "Thu, Fri · 7:30–8:30 pm"
+      }
     ]
   },
   {
@@ -161,11 +290,23 @@
     "reg_fee": 2000,
     "course_fee": 47000,
     "course_fee_usd": 370,
-    "total_fee": 49000,
     "details": [
       "Best for students who wish to own an interior design company or work as designers in the modern market.",
       "Covers residential and commercial design foundations.",
       "Evening classes run Mon, Tue, and Wed."
+    ],
+    "timetable": [
+      {
+        "days": "Mon, Tue, Wed",
+        "morning": null,
+        "evening": "7:30–9:00 pm"
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Evening",
+        "schedule": "Mon, Tue, Wed · 7:30–9:00 pm"
+      }
     ]
   },
   {
@@ -192,11 +333,23 @@
     "reg_fee": 2000,
     "course_fee": 105000,
     "course_fee_usd": 835,
-    "total_fee": 107000,
     "details": [
       "Advanced option for students targeting professional interior design practice.",
       "Covers residential and commercial spaces with professional standards.",
       "Evening classes run Mon, Tue, and Wed."
+    ],
+    "timetable": [
+      {
+        "days": "Mon, Tue, Wed",
+        "morning": null,
+        "evening": "7:30–9:00 pm"
+      }
+    ],
+    "class_options": [
+      {
+        "label": "Evening",
+        "schedule": "Mon, Tue, Wed · 7:30–9:00 pm"
+      }
     ]
   }
 ]

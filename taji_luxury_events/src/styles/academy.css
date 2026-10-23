@@ -1,0 +1,32 @@
+/* Palette sampled from the academy course brochure. Existing images remain in place. */
+.academy-theme {
+  --color-charcoal: #fdf7eb;
+  --color-primary: #b71c1c;
+  --color-gold: #b71c1c;
+  --color-gold-bright: #b71c1c;
+  --color-ivory: #333333;
+  --color-mist: #585652;
+  color: #333333;
+  background: #fdf7eb;
+}
+
+.academy-theme > section:nth-of-type(even) {
+  background: #ffffff;
+}
+
+.academy-theme [class*="bg-white/5"] {
+  background-color: #ffffff !important;
+}
+
+.academy-theme [class*="border-white/"] {
+  border-color: #e4d8c9;
+}
+
+.academy-theme .academy-course-card {
+  box-shadow: 0 12px 34px rgba(79, 45, 34, 0.06);
+}
+
+.academy-theme .bg-primary,
+.academy-theme .bg-gold {
+  color: #ffffff !important;
+}

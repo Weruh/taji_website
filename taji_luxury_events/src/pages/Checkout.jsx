@@ -6,6 +6,7 @@ import coursesData from '../data/courses.json'
 import { academyAdditionalFees } from '../data/content.js'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
+import { feesForCourse } from '../utils/academyFees.js'
 import { API_BASE_URL, PAYSTACK_PUBLIC_KEY } from '../config/payments.js'
 
 const courses = normalizeMediaList(coursesData, ['image'])
@@ -43,16 +44,17 @@ export default function Checkout() {
     )
   }
 
-  const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
   const registrationFee = academyAdditionalFees.find((fee) => fee.label === 'Registration Fee')
   const registrationFeeKES = Number(registrationFee?.amount || course.reg_fee || 2000)
+  const balanceFees = feesForCourse(course).filter((fee) => fee.label !== 'Registration Fee')
+  const balanceFeesKES = balanceFees.reduce((total, fee) => total + fee.amount, 0)
   const isAcademyCoursePage = location.pathname.startsWith('/academy/courses/')
   const isRegistrationPayment = searchParams.get('payment') === 'registration'
-  const subtotalKES = Number(course.course_fee || 0) + separateFeesKES
+  const subtotalKES = Number(course.course_fee || 0) + balanceFeesKES
   const amountKES = isRegistrationPayment
     ? registrationFeeKES
-    : selectedOption === 'half'
-      ? Math.ceil(subtotalKES / 2)
+    : selectedOption === 'third'
+      ? Math.ceil(subtotalKES / 3)
       : subtotalKES
 
   const handlePaystackPayment = async (event) => {
@@ -64,6 +66,7 @@ export default function Checkout() {
     if (!validateForm(form)) return
     const email = form.querySelector('#email').value.trim()
     const name = form.querySelector('#name').value.trim()
+    const classOption = form.querySelector('#class-option').value
 
     if (!PAYSTACK_PUBLIC_KEY) {
       setErrors(['Online payment is currently unavailable. Please contact us for help with enrollment.'])
@@ -87,6 +90,8 @@ export default function Checkout() {
           amount: amountKES,
           email,
           name,
+          classOption,
+          paymentType: isRegistrationPayment ? 'registration_fee' : selectedOption,
           courseTitle: isRegistrationPayment ? `${course.title} registration fee` : course.title,
         }),
       })
@@ -154,6 +159,7 @@ export default function Checkout() {
             metadata: {
               customer_name: name,
               course: course.title,
+              class_option: classOption,
               payment_type: isRegistrationPayment ? 'registration_fee' : selectedOption,
             },
             ...callbacks,
@@ -189,7 +195,7 @@ export default function Checkout() {
   }
 
   return (
-    <section className="px-3 sm:px-4 lg:px-6 py-16">
+    <section className="academy-theme px-3 sm:px-4 lg:px-6 py-16">
       <div className="max-w-6xl mx-auto space-y-10" data-aos="fade-up">
         <Breadcrumbs
           crumbs={[
@@ -204,7 +210,7 @@ export default function Checkout() {
           <h1 className="text-4xl font-playfair">{course.title}</h1>
           {isRegistrationPayment ? (
             <p className="text-base text-mist">Pay KES {formatKES(registrationFeeKES)} to reserve your place.</p>
-          ) : null}
+          ) : <p className="text-base text-mist">Pay the registration fee separately before settling your tuition and other fees.</p>}
         </div>
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
@@ -218,10 +224,10 @@ export default function Checkout() {
             />
             <div className="space-y-5 p-6 sm:p-8">
               <p className="text-sm leading-relaxed text-ivory/80">{course.summary}</p>
-              {course.schedule ? (
+              {course.timetable?.length ? (
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-gold/70">Schedule</p>
-                  <p className="mt-2 text-sm text-ivory/80">{course.schedule}</p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-gold/70">Class timetable</p>
+                  <div className="mt-2 space-y-1 text-sm text-ivory/80">{course.timetable.map((slot) => <p key={slot.days}>{slot.days}: {slot.morning ? `Morning ${slot.morning}` : ''}{slot.morning && slot.evening ? ' · ' : ''}{slot.evening ? `Evening ${slot.evening}` : ''}</p>)}</div>
                 </div>
               ) : null}
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-5 sm:grid-cols-4">
@@ -282,14 +288,12 @@ export default function Checkout() {
                       <span className="text-mist">School fee</span>
                       <span className="font-semibold text-ivory">KES {formatKES(course.course_fee)}</span>
                     </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-mist">Additional fees</span>
-                      <span className="font-semibold text-ivory">KES {formatKES(separateFeesKES)}</span>
-                    </div>
+                    {balanceFees.map((fee) => <div key={fee.label} className="flex items-center justify-between gap-4"><span className="text-mist">{fee.label}</span><span className="font-semibold text-ivory">KES {formatKES(fee.amount)}</span></div>)}
                     <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3">
-                      <span className="font-semibold text-ivory">Total</span>
+                      <span className="font-semibold text-ivory">Balance after registration</span>
                       <span className="text-xl font-playfair text-gold">KES {formatKES(subtotalKES)}</span>
                     </div>
+                    <p className="text-xs text-mist">The KES {formatKES(registrationFeeKES)} registration fee is paid separately.</p>
                   </div>
                 )}
               </div>
@@ -310,20 +314,28 @@ export default function Checkout() {
 
                     <label className="flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-ivory hover:border-gold cursor-pointer">
                       <span className="font-semibold">
-                        Two installments — KES {formatKES(Math.ceil(subtotalKES / 2))} now
+                        Three installments — KES {formatKES(Math.ceil(subtotalKES / 3))} now
                       </span>
                       <input
                         type="radio"
-                        checked={selectedOption === 'half'}
-                        onChange={() => setSelectedOption('half')}
+                        checked={selectedOption === 'third'}
+                        onChange={() => setSelectedOption('third')}
                         className="h-4 w-4 accent-gold"
                       />
                     </label>
+                    <p className="text-xs text-mist">Pay the first installment before classes begin. Arrange the second and third payments with the academy during the class period.</p>
                   </fieldset>
                 </>
               )}
 
               <div className="grid gap-4 md:grid-cols-2">
+                <label className="block text-sm text-ivory/80 md:col-span-2">
+                  <span className="block mb-1">Preferred class</span>
+                  <select id="class-option" defaultValue="" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
+                    <option value="" disabled>Choose an available class</option>
+                    {course.class_options?.map((option) => <option key={option.label} value={`${option.label}: ${option.schedule}`}>{option.label} — {option.schedule}</option>)}
+                  </select>
+                </label>
                 <label className="block text-sm text-ivory/80">
                   <span className="block mb-1">Full name</span>
                   <input id="name" type="text" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required />

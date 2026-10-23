@@ -34,6 +34,7 @@ export const signaturePrograms = [
   'Floral Design',
   'Balloon Design',
   'Corporate Event Management',
+  'Business Development and Growth',
   'Interior Design',
 ]
 
@@ -53,6 +54,7 @@ export const academyOutcomes = [
 export const academyAdditionalFees = [
   { label: 'Registration Fee', amount: 2000, usd: 16, note: 'One-time enrollment & application processing' },
   { label: 'Vendor Visit Fee', amount: 5000, usd: 40, note: 'Guided visits to vendors and suppliers' },
+  { label: 'Training Materials Fee', amount: 7000, usd: 55, note: 'Wedding Decor, Floral Design, and Balloon Design students only', courseSlugs: ['wedding-decor-styling', 'floral-design', 'balloon-design'] },
   { label: 'Exam Fee', amount: 5000, usd: 40, note: 'Course examination and assessment' },
   { label: 'Graduation Fee', amount: 7500, usd: 60, note: 'Graduation ceremony and certification' },
 ]

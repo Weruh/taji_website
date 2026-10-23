@@ -100,7 +100,7 @@ app.post("/api/paystack/initialize", async (req, res) => {
   try {
     if (!requirePaystackSecret(res)) return;
 
-    const { amount, email, name, courseTitle } = req.body || {};
+    const { amount, email, name, courseTitle, classOption, paymentType } = req.body || {};
     const numericAmount = Number(amount);
     const normalizedEmail = String(email || "")
       .trim()
@@ -127,6 +127,8 @@ app.post("/api/paystack/initialize", async (req, res) => {
       metadata: {
         customer_name: String(name || "Customer").trim(),
         course: String(courseTitle || "Academy course").trim(),
+        class_option: String(classOption || "").trim().slice(0, 200),
+        payment_type: String(paymentType || "").trim().slice(0, 40),
       },
     };
 

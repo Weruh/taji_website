@@ -101,7 +101,7 @@ export default function App() {
           <Route path="contact" element={<Contact />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
-          <Route path="academy/courses/:courseSlug" element={<Checkout />} />
+          <Route path="academy/courses/:courseSlug" element={<CourseDetail />} />
           <Route path="checkout/:courseSlug" element={<Checkout />} />
           <Route path="success" element={<Success />} />
           <Route path=":courseSlug" element={<CourseDetail />} />

@@ -7,6 +7,7 @@ import { academyStudioMedia } from '../data/media.js'
 import { academyAdditionalFees, academyOutcomes, academyPaymentDetails, academySteps, signaturePrograms } from '../data/content.js'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
+import { feeTotalForCourse, totalForCourse } from '../utils/academyFees.js'
 
 const courses = normalizeMediaList(coursesData, ['image'])
 
@@ -14,7 +15,6 @@ export default function Academy() {
   const [level, setLevel] = useState('All levels')
   const [preferredCourseSlug, setPreferredCourseSlug] = useState(courses[0]?.slug || '')
   const registrationFee = academyAdditionalFees.find((fee) => fee.label === 'Registration Fee')
-  const separateFeesKES = academyAdditionalFees.reduce((total, fee) => total + Number(fee.amount || 0), 0)
 
   const levels = useMemo(() => {
     const set = new Set(courses.map((course) => course.level || 'Flexible'))
@@ -24,11 +24,11 @@ export default function Academy() {
   const filteredCourses = courses.filter((course) => level === 'All levels' || course.level === level)
   const preferredCourse = courses.find((course) => course.slug === preferredCourseSlug) || courses[0]
   const registrationCheckoutUrl = preferredCourse
-    ? `/academy/courses/${preferredCourse.slug}?payment=registration#payment`
+    ? `/checkout/${preferredCourse.slug}?payment=registration#payment`
     : '#programs'
 
   return (
-    <>
+    <div className="academy-theme">
       <section className="px-3 sm:px-4 lg:px-6 py-16">
         <div className="max-w-5xl mx-auto space-y-6" data-aos="fade-up">
           <Breadcrumbs crumbs={[{ label: 'Home', url: '/' }, { label: 'Academy' }]} />
@@ -192,7 +192,7 @@ export default function Academy() {
                   <th className="px-6 py-3">Mode</th>
                   <th className="px-6 py-3">School Fee</th>
                   <th className="px-6 py-3">Separate Fees</th>
-                  <th className="px-6 py-3">Subtotal To Pay</th>
+                  <th className="px-6 py-3">Total Listed Fees</th>
                 </tr>
               </thead>
               <tbody>
@@ -202,8 +202,8 @@ export default function Academy() {
                     <td className="px-6 py-4">{course.duration}</td>
                     <td className="px-6 py-4 text-mist/70">{course.mode || '--'}</td>
                     <td className="px-6 py-4">KES {formatKES(course.course_fee)}</td>
-                    <td className="px-6 py-4">KES {formatKES(separateFeesKES)}</td>
-                    <td className="px-6 py-4 text-gold font-semibold">KES {formatKES(Number(course.course_fee || 0) + separateFeesKES)}</td>
+                    <td className="px-6 py-4">KES {formatKES(feeTotalForCourse(course))}</td>
+                    <td className="px-6 py-4 text-gold font-semibold">KES {formatKES(totalForCourse(course))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -212,7 +212,7 @@ export default function Academy() {
           <div className="rounded-3xl border border-gold/30 p-8 bg-gradient-to-r from-gold/10 to-transparent">
             <p className="text-lg font-playfair text-gold">Ready to enroll?</p>
             <p className="text-sm text-mist mt-2">
-              Secure your spot by paying the school fee and the separate academy fees through the registration prompt.
+              Secure your spot with the registration fee, then choose how to pay tuition and the other applicable fees.
             </p>
             <div className="mt-6 flex flex-wrap gap-4">
               <a href="#programs" className="px-6 py-3 rounded-full bg-primary text-ivory text-sm uppercase tracking-wide hover:bg-primary/90 transition">
@@ -292,7 +292,7 @@ export default function Academy() {
             <p className="text-sm uppercase tracking-[0.4em] text-gold">Payment Options</p>
             <div className="mt-5 space-y-4 text-sm text-mist">
               <p>Full payment: full amount cleared before the beginning of classes.</p>
-              <p>Two installments: first installment before classes begin, second installment during the class period.</p>
+              <p>Three installments: first before classes begin, with the second and third during the class period.</p>
             </div>
             <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
               <div>
@@ -323,6 +323,6 @@ export default function Academy() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }

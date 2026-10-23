@@ -1,18 +1,20 @@
 import { localToday, validateForm, validateFormInput } from '../utils/formValidation.js'
 import { kenyanPhoneInputProps } from '../utils/phoneValidation.js'
 import { useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 import Breadcrumbs from '../components/Breadcrumbs.jsx'
 import LazyBackground from '../components/LazyBackground.jsx'
 import coursesData from '../data/courses.json'
 import faqsData from '../data/faqs.json'
 import { normalizeMediaList } from '../utils/media.js'
 import { formatKES } from '../utils/format.js'
+import { feesForCourse, totalForCourse } from '../utils/academyFees.js'
 
 const courses = normalizeMediaList(coursesData, ['image'])
 
 export default function CourseDetail() {
   const { courseSlug } = useParams()
+  const location = useLocation()
   const course = useMemo(() => courses.find((item) => item.slug === courseSlug), [courseSlug])
   const [openIndex, setOpenIndex] = useState(null)
   const formRef = useRef(null)
@@ -26,6 +28,10 @@ export default function CourseDetail() {
         </div>
       </section>
     )
+  }
+
+  if (new URLSearchParams(location.search).get('payment') === 'registration') {
+    return <Navigate to={`/checkout/${course.slug}?payment=registration#payment`} replace />
   }
 
   const handleSubmit = (event) => {
@@ -43,7 +49,7 @@ export default function CourseDetail() {
       'Course Enrollment -- Taji Luxury Events Academy',
       '---',
       `Course: ${course.title}`,
-      `Total Fee: KES ${formatKES(course.total_fee)}`,
+      `Tuition and applicable fees: KES ${formatKES(totalForCourse(course))}`,
       '---',
       `Name: ${name}`,
       `Phone: ${phone}`,
@@ -54,7 +60,7 @@ export default function CourseDetail() {
   }
 
   return (
-    <>
+    <div className="academy-theme">
       <section className="relative px-3 sm:px-4 lg:px-6 py-20">
         <div className="rounded-3xl overflow-hidden border border-white/10 bg-white/5" data-aos="fade-up">
           <LazyBackground className="h-80 bg-cover bg-center" src={course.image} alt={`${course.title} cover`} priority>
@@ -78,10 +84,16 @@ export default function CourseDetail() {
                   <span className="px-3 py-1 rounded-full border border-gold/30 text-gold/80">{course.mode}</span>
                 ) : null}
               </div>
-              {course.schedule ? (
+              {course.timetable?.length ? (
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
-                  <p className="text-xs uppercase tracking-[0.4em] text-gold/70 mb-1">Class Schedule</p>
-                  <p className="text-sm text-mist">{course.schedule}</p>
+                  <h2 className="text-xs uppercase tracking-[0.4em] text-gold mb-3">Class Timetable</h2>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[430px] text-left text-sm">
+                      <thead><tr className="border-b border-white/10"><th className="py-2">Days</th><th className="py-2">Morning</th><th className="py-2">Evening</th></tr></thead>
+                      <tbody>{course.timetable.map((slot) => <tr key={slot.days} className="border-b border-white/10 last:border-0"><th className="py-2 font-semibold">{slot.days}</th><td className="py-2">{slot.morning || '—'}</td><td className="py-2">{slot.evening || '—'}</td></tr>)}</tbody>
+                    </table>
+                  </div>
+                  {course.class_options?.length > 1 ? <p className="mt-3 text-xs text-mist">Choose one available class option when enrolling.</p> : null}
                 </div>
               ) : null}
               <div>
@@ -99,25 +111,19 @@ export default function CourseDetail() {
                 <p className="text-sm uppercase tracking-[0.4em] text-gold/80">Investment</p>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <dt>Reg. fee</dt>
-                    <dd className="font-semibold">KES {formatKES(course.reg_fee)}</dd>
-                  </div>
-                  <div className="flex justify-between">
                     <dt>Course fee</dt>
                     <dd className="font-semibold">
                       KES {formatKES(course.course_fee)}
                       {course.course_fee_usd ? <span className="text-mist/60"> (${course.course_fee_usd})</span> : null}
                     </dd>
                   </div>
-                  <div className="flex justify-between text-lg font-playfair text-gold">
-                    <dt>Total with reg.</dt>
-                    <dd>KES {formatKES(course.total_fee)}</dd>
+                  {feesForCourse(course).map((fee) => <div key={fee.label} className="flex justify-between gap-4"><dt>{fee.label}</dt><dd className="font-semibold">KES {formatKES(fee.amount)}</dd></div>)}
+                  <div className="flex justify-between gap-4 border-t border-white/10 pt-3 text-lg font-playfair text-gold">
+                    <dt>Total listed fees</dt>
+                    <dd>KES {formatKES(totalForCourse(course))}</dd>
                   </div>
                 </dl>
-                <p className="mt-4 text-xs text-mist/60">
-                  Vendor visit, training materials, exam, and graduation fees may apply separately according to the academy fee
-                  schedule.
-                </p>
+                <p className="mt-4 text-xs text-mist/60">Tuition and additional fees are shown separately. The training materials fee appears only for applicable courses.</p>
               </div>
             </div>
             <aside className="space-y-4 self-start sticky top-24">
@@ -141,17 +147,16 @@ export default function CourseDetail() {
                   </label>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Preferred class time</span>
-                    <select name="class_time" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
-                      <option value="Morning">Morning</option>
-                      <option value="Evening">Evening</option>
-                      <option value="Weekend">Weekend</option>
+                    <select name="class_time" defaultValue="" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
+                      <option value="" disabled>Choose a class</option>
+                      {course.class_options?.map((option) => <option key={option.label} value={`${option.label}: ${option.schedule}`}>{option.label} — {option.schedule}</option>)}
                     </select>
                   </label>
                   <label className="block text-sm text-ivory/80">
                     <span className="block mb-1">Payment plan</span>
                     <select name="payment_plan" className="w-full rounded-lg bg-charcoal border border-white/10 px-3 py-2 text-sm focus:border-gold focus:outline-none" required>
                       <option value="Full payment">Full payment</option>
-                      <option value="Two installments">Two installments</option>
+                      <option value="Three installments">Three installments</option>
                     </select>
                   </label>
                   <button
@@ -162,6 +167,8 @@ export default function CourseDetail() {
                     Enrol via WhatsApp
                   </button>
                   <p className="text-xs text-center text-mist/50">Opens WhatsApp with your details pre-filled.</p>
+                  <Link to={`/checkout/${course.slug}?payment=registration#payment`} className="block text-center text-xs font-semibold text-gold underline">Pay registration fee online</Link>
+                  <Link to={`/checkout/${course.slug}#payment`} className="block text-center text-xs font-semibold text-gold underline">Pay tuition and remaining fees</Link>
                 </form>
               </div>
             </aside>
@@ -189,6 +196,6 @@ export default function CourseDetail() {
           </div>
         </div>
       </section>
-    </>
+    </div>
   )
 }
